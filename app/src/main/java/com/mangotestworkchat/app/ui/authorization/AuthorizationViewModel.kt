@@ -1,7 +1,29 @@
 package com.mangotestworkchat.app.ui.authorization
 
 import androidx.lifecycle.ViewModel
+import com.mangotestworkchat.app.repository.Repository
+import com.mangotestworkchat.app.utils.MaskTransformation
+import javax.inject.Inject
 
-class AuthorizationViewModel : ViewModel() {
-    // TODO: Implement the ViewModel
+class AuthorizationViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
+
+    private fun createCountryMaskDataListVM(): List<PhoneMaskCountryData> {
+        return listOf(
+            PhoneMaskCountryData(country = "Russia", mask = "+7 (9##) ###-##-##", maxChar = 9),
+            PhoneMaskCountryData(country = "Belarus", mask = "+375 (###) ###-##-##", maxChar = 10)
+        )
+    }
+
+    fun findMaskVM(country: String): PhoneMaskCountryData {
+        return createCountryMaskDataListVM().find {
+            it.country == country
+        } ?: throw Exception ("invalidate key")
+    }
+
+    fun getMaskTransformationVM(maskText: String): MaskTransformation {
+        return MaskTransformation(maskText)
+    }
+
 }

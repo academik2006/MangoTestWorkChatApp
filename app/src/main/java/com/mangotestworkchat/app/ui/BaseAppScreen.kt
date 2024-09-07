@@ -31,17 +31,18 @@ import com.mangotestworkchat.navigation.NavigationItem
 import com.mangotestworkchat.navigation.NavigationState
 import com.mangotestworkchat.navigation.Screen
 import com.mangotestworkchat.app.R
+import com.mangotestworkchat.app.di.ViewModelFactory
 import com.mangotestworkchat.app.ui.authorization.AuthorizationScreen
 import com.mangotestworkchat.app.ui.chat.ChatScreen
 import com.mangotestworkchat.app.ui.profile.ProfileScreen
+import com.mangotestworkchat.app.ui.registration.RegistrationScreen
 import com.mangotestworkchat.app.ui.theme.red_APP
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseAppScreen(
-) {
+fun BaseAppScreen() {
     val snackBarHostState = SnackbarHostState()
     val navController = rememberNavController()
     val navigationState = remember {
@@ -127,6 +128,9 @@ fun BaseAppScreen(
             },
             profileScreen = {
                 ProfileScreen(navigationState = navigationState)
+            },
+            registrationScreen = {phone: String ->
+                RegistrationScreen(navigationState = navigationState, phone = phone)
             }
 
         )
