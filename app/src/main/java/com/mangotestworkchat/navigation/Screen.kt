@@ -3,7 +3,7 @@ package com.mangotestworkchat.navigation
 private const val ROUTE_AUTH_SCREEN = "auth_screen"
 private const val ROUTE_CHAT_SCREEN = "chat_screen"
 private const val ROUTE_PROFILE_SCREEN = "profile_screen"
-private const val ROUTE_REGISTRATION_SCREEN = "registration_screen/{userPhone}"
+private const val ROUTE_REGISTRATION_SCREEN = "registration_screen/{$USER_PHONE_KEY}"
 sealed class Screen(val route: String) {
     data object AuthorizationScreen : Screen(ROUTE_AUTH_SCREEN)
     data object ChatScreen : Screen(ROUTE_CHAT_SCREEN)

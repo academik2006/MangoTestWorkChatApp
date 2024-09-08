@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.mangotestworkchat.navigation.Screen
+
+
+const val USER_PHONE_KEY = "userPhone"
 
 @Composable
 fun AppNavGraph(
@@ -24,7 +26,7 @@ fun AppNavGraph(
             authorizationScreen()
         }
         composable(Screen.RegistrationScreen.route) { navBackStackEntry ->
-            val userPhone = navBackStackEntry.arguments?.getString("userPhone")
+            val userPhone = navBackStackEntry.arguments?.getString(USER_PHONE_KEY)
             registrationScreen(userPhone ?: "")
         }
         composable(Screen.ChatScreen.route) {

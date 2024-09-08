@@ -13,8 +13,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -49,6 +47,7 @@ import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.utils.MaskTransformation
 import com.mangotestworkchat.navigation.NavigationState
 import com.mangotestworkchat.navigation.Screen
+import okhttp3.internal.userAgent
 
 @Composable
 fun AuthorizationScreen(navigationState: NavigationState) {
@@ -58,6 +57,10 @@ fun AuthorizationScreen(navigationState: NavigationState) {
 
     val userPhone = remember {
         mutableStateOf("")
+    }
+
+    val isUserExist = remember {
+        mutableStateOf(false)
     }
 
     val currentRegion = "Russia"
@@ -90,14 +93,14 @@ fun AuthorizationScreen(navigationState: NavigationState) {
             maskText = phoneMaskCountryData.mask,
             maxChar = phoneMaskCountryData.maxChar
         )
-
-        PasswordTextField()
-
-        ButtonWithIcon("Авторизация")
+        if (isUserExist.value) {
+            EnterSmsCodeTextField()
+        }
 
         Text(
             modifier = Modifier.clickable {
-                navigationState.navigateTo(Screen.RegistrationScreen.getRouteWithArgs(userPhone.value))
+                val userPhoneCurrent = "+79${userPhone.value}"
+                navigationState.navigateTo(Screen.RegistrationScreen.getRouteWithArgs(userPhoneCurrent))
             },
             text = "Регистрация нового пользователя",
             style = BgBoldRoboto18
@@ -120,8 +123,8 @@ fun PhoneNumberTextFieldWithMask(
         value = userPhone.value,
         onValueChange = {
             userPhone.value = it.take(maxChar)
-            if (it.length > maxChar) {
-                focusManager.moveFocus(FocusDirection.Down)
+            if (it.length >= maxChar) {
+                focusManager.clearFocus(force = true)
             }
         },
         placeholder = {
@@ -140,24 +143,35 @@ fun PhoneNumberTextFieldWithMask(
 }
 
 @Composable
-fun PasswordTextField() {
+fun EnterSmsCodeTextField() {
     var password by rememberSaveable { mutableStateOf("") }
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
     TextField(
         value = password,
-        onValueChange = { password = it },
+        onValueChange = {
+            password = it
+        },
         singleLine = true,
-        label = { Text("Введите пароль из СМС") },
-        visualTransformation =
-        if (passwordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+        label = {
+            Text("Введите пароль из СМС")
+        },
+        visualTransformation = if (passwordHidden) PasswordVisualTransformation()
+        else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password
+        ),
         trailingIcon = {
-            IconButton(onClick = { passwordHidden = !passwordHidden }) {
+            IconButton(onClick = {
+                passwordHidden = !passwordHidden
+            })
+            {
                 val visibilityIcon =
-                    if (passwordHidden) Icons.Rounded.Face else Icons.Rounded.Clear
-                // Please provide localized description for accessibility services
+                    if (passwordHidden) R.drawable.visibility_24px else R.drawable.visibility_off_24px
                 val description = if (passwordHidden) "Показать пароль" else "Скрыть пароль"
-                Icon(imageVector = visibilityIcon, contentDescription = description)
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = visibilityIcon),
+                    contentDescription = description
+                )
             }
         }
     )
