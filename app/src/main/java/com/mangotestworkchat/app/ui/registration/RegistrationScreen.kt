@@ -26,7 +26,7 @@ import com.mangotestworkchat.app.ui.authorization.ButtonWithIcon
 import com.mangotestworkchat.app.ui.authorization.EnterSmsCodeTextField
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
-import com.mangotestworkchat.navigation.NavigationState
+import com.mangotestworkchat.app.navigation.NavigationState
 
 
 @Composable

@@ -45,8 +45,8 @@ import com.mangotestworkchat.app.ui.theme.BgBoldRoboto18
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.utils.MaskTransformation
-import com.mangotestworkchat.navigation.NavigationState
-import com.mangotestworkchat.navigation.Screen
+import com.mangotestworkchat.app.navigation.NavigationState
+import com.mangotestworkchat.app.navigation.Screen
 import okhttp3.internal.userAgent
 
 @Composable

@@ -1,4 +1,4 @@
-package com.mangotestworkchat.navigation
+package com.mangotestworkchat.app.navigation
 
 import com.mangotestworkchat.app.R
 

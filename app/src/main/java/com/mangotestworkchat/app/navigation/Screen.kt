@@ -1,4 +1,4 @@
-package com.mangotestworkchat.navigation
+package com.mangotestworkchat.app.navigation
 
 private const val ROUTE_AUTH_SCREEN = "auth_screen"
 private const val ROUTE_CHAT_SCREEN = "chat_screen"

@@ -1,4 +1,4 @@
-package com.mangotestworkchat.navigation
+package com.mangotestworkchat.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
