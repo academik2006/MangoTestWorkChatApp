@@ -1,5 +1,7 @@
 package com.granch.network.models.response
 
+import com.mangotestworkchat.app.network.models.response.ResultResponseBase
+
 data class ResultResponsePostRequest(
     val detail: String,
     val status: Int,

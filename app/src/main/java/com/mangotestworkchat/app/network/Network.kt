@@ -1,20 +1,19 @@
-package com.granch.network
+package com.mangotestworkchat.app.network
 
-import com.mangotestworkchat.app.network.ApiServer
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-const val BASE_URL = "http://10.0.2.2:7402/"
+const val BASE_URL = "https://plannerok.ru/"
 const val CONNECTION_TIME_OUT = 5000L
 
 class Network {
 
     private fun addHttpInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BASIC
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
         return interceptor
     }
 

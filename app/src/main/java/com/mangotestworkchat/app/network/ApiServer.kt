@@ -1,34 +1,22 @@
 package com.mangotestworkchat.app.network
 
-import com.granch.network.models.request.UpgradeIpBodyData
-import com.granch.network.models.response.ResultResponsePhoneServer
-import com.granch.network.models.response.ResultResponseUpgradeIp
+import com.mangotestworkchat.app.network.models.request.SendAuthCodeBodyDataModel
+import com.mangotestworkchat.app.network.models.response.ResultResponseBase
+import com.mangotestworkchat.app.network.models.response.SendAuthCodeResponse
 import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiServer {
 
-    @GET("/api/IpManagement/")
-    suspend fun getPhoneList(
-    ): Response<List<ResultResponsePhoneServer>>
+    @POST("api/v1/users/send-auth-code/")
+    suspend fun sendAuthCode(
+        @Body sendAuthCodeBodyDataModel: SendAuthCodeBodyDataModel
+    ): Response<SendAuthCodeResponse>
 
-    @POST("api/IpManagement")
-    suspend fun upgradeIp(
-    @Body upgradeIpBodyData: UpgradeIpBodyData
-    ): Response<ResultResponseUpgradeIp>
+    @POST("api/v1/users/check-auth-code/")
+    suspend fun checkAuthCode(
+        @Body sendAuthCodeBodyDataModel: SendAuthCodeBodyDataModel
 
-    @POST("api/PhoneManagement/attach/phone={phoneId}/employee={employeeId}")
-    suspend fun givePhone(
-        @Path ("phoneId") phoneId: Int?,
-        @Path ("employeeId") employeeId: Int?
-    ): Response<List<ResultResponsePhoneServer>>
-
-
-
-//
-//    @DELETE("/api/v1/Visit/{id}")
-//    suspend fun closeVisit (
-//        @Path("id") id: Int
-//    ): Response<Void>
+    ): Response<ResultResponseBase>
 
 }

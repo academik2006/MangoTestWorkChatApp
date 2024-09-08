@@ -1,3 +1,3 @@
-package com.granch.network.models.response
+package com.mangotestworkchat.app.network.models.response
 
 abstract class ResultResponseBase

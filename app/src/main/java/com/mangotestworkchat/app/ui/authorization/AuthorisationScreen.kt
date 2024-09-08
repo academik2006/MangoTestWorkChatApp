@@ -88,11 +88,15 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         )
 
         PhoneNumberTextFieldWithMask(
-            userPhone,
+            userPhone = userPhone,
             maskTransformation = maskTransformation,
             maskText = phoneMaskCountryData.mask,
             maxChar = phoneMaskCountryData.maxChar
-        )
+        ) {
+            val userPhoneCurrent = "+79${userPhone.value}"
+            viewModel.checkAuthVM(userPhoneCurrent)
+        }
+
         if (isUserExist.value) {
             EnterSmsCodeTextField()
         }
@@ -114,7 +118,8 @@ fun PhoneNumberTextFieldWithMask(
     userPhone: MutableState<String>,
     maskTransformation: MaskTransformation,
     maskText: String,
-    maxChar: Int
+    maxChar: Int,
+    checkAuth: () -> Unit
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -125,6 +130,7 @@ fun PhoneNumberTextFieldWithMask(
             userPhone.value = it.take(maxChar)
             if (it.length >= maxChar) {
                 focusManager.clearFocus(force = true)
+                checkAuth.invoke()
             }
         },
         placeholder = {
@@ -177,57 +183,6 @@ fun EnterSmsCodeTextField() {
     )
 }
 
-@Composable
-fun ButtonWithIcon(textButton: String) {
-    Button(
-        onClick = { /* Do something! */ },
-        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-    ) {
-        Icon(
-            Icons.Default.AccountCircle,
-            contentDescription = "Localized description",
-            modifier = Modifier.size(ButtonDefaults.IconSize)
-        )
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(textButton)
-    }
-}
 
-@Composable
-fun TextFieldWithErrorState() {
-
-    val errorMessage = "Text input too long"
-    var text by rememberSaveable { mutableStateOf("") }
-    var isError by rememberSaveable { mutableStateOf(false) }
-    val charLimit = 10
-
-    fun validate(text: String) {
-        isError = text.length > charLimit
-    }
-
-    TextField(
-        value = text,
-        onValueChange = {
-            text = it
-            validate(text)
-        },
-        singleLine = true,
-        label = { Text(if (isError) "Username*" else "Username") },
-        supportingText = {
-            Row {
-                Text(if (isError) errorMessage else "", Modifier.clearAndSetSemantics {})
-                Spacer(Modifier.weight(1f))
-                Text("Limit: ${text.length}/$charLimit")
-            }
-        },
-        isError = isError,
-        keyboardActions = KeyboardActions { validate(text) },
-        modifier =
-        Modifier.semantics {
-            // Provide localized description of the error
-            if (isError) error(errorMessage)
-        }
-    )
-}
 
 
