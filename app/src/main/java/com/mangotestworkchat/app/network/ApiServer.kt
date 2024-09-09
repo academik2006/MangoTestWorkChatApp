@@ -11,7 +11,7 @@ interface ApiServer {
     @POST("api/v1/users/send-auth-code/")
     suspend fun sendAuthCode(
         @Body sendAuthCodeBodyDataModel: SendAuthCodeBodyDataModel
-    ): Response<SendAuthCodeResponse>
+    ): Response<List<SendAuthCodeResponse>>
 
     @POST("api/v1/users/check-auth-code/")
     suspend fun checkAuthCode(

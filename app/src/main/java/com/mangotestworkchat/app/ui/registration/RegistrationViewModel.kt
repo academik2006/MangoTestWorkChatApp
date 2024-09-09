@@ -11,16 +11,23 @@ class RegistrationViewModel @Inject constructor() : ViewModelBase() {
 
     fun isDataUserValidVM(context: Context, name: String, userName: String): Boolean {
         return if (name.isEmpty() || userName.isEmpty()) {
-            showToastToUser("Поле c данными не может быть пустым", context)
+            showToastToUser(
+                context = context,
+                message = "Поле c данными не может быть пустым"
+            )
             false
-        } else{
+        } else {
             if (isContainsSpecialCharacters(name) || isContainsSpecialCharacters(userName)) {
-                showToastToUser("Одно из полей содержит специальные сивмолы", context)
+                showToastToUser(
+                    context = context,
+                    message = "Одно из полей содержит специальные сивмолы"
+                )
                 false
             } else true
         }
     }
 }
+
 fun isContainsSpecialCharacters(text: String): Boolean {
     return text.contains("[!\"#$%&'()*+,-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())
 }

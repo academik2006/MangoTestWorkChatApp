@@ -3,18 +3,12 @@ package com.mangotestworkchat.app.ui.authorization
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
@@ -27,13 +21,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -47,13 +39,13 @@ import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.utils.MaskTransformation
 import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
-import okhttp3.internal.userAgent
 
 @Composable
 fun AuthorizationScreen(navigationState: NavigationState) {
 
     val component = getApplicationComponent()
     val viewModel: AuthorizationViewModel = viewModel(factory = component.getViewModelFactory())
+    val context = LocalContext.current.applicationContext
 
     val userPhone = remember {
         mutableStateOf("")
@@ -94,7 +86,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
             maxChar = phoneMaskCountryData.maxChar
         ) {
             val userPhoneCurrent = "+79${userPhone.value}"
-            viewModel.checkAuthVM(userPhoneCurrent)
+            viewModel.checkAuthVM(context = context, userPhoneCurrent)
         }
 
         if (isUserExist.value) {

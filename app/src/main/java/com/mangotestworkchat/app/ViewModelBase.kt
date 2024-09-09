@@ -10,7 +10,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 open class ViewModelBase @Inject constructor(): ViewModel() {
-    fun showToastToUser (message: String, context: Context) {
+
+    fun showToastToUser (context: Context, message: String) {
         viewModelScope.launch(Dispatchers.Main) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }

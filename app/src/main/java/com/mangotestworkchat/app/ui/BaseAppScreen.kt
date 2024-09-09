@@ -63,36 +63,6 @@ fun BaseAppScreen() {
         snackbarHost = {
             SnackbarHost(hostState = snackBarHostState)
         },
-        topBar = {
-
-            if (isShowBarNavigation(currentRout))
-            {
-                TopAppBar(
-                    title = {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                imageVector = ImageVector.vectorResource(id = R.drawable.chat_24dp),
-                                contentDescription = " ",
-                                tint = red_APP
-                            )
-                            Text(text = stringResource(id = R.string.app_name))
-
-                            Spacer(modifier = Modifier.width(120.dp))
-                        }
-
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navigationState.navigateTo(Screen.ChatScreen.route)
-                        }) {
-                            Icon(Filled.ArrowBack, "backIcon")
-                        }
-                    }
-                )
-            }
-
-        },
         bottomBar = {
 
             var selectedItem by remember { mutableIntStateOf(0) }
