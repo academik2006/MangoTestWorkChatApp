@@ -7,7 +7,6 @@ import com.mangotestworkchat.app.network.api.ApiResult
 import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.ViewModelBase
 import com.mangotestworkchat.app.network.INetwork
-import com.mangotestworkchat.app.network.models.response.CheckAuthCodeResponse
 import com.mangotestworkchat.app.repository.Repository
 import com.mangotestworkchat.app.utils.MaskTransformation
 import kotlinx.coroutines.Dispatchers

@@ -3,7 +3,7 @@ package com.mangotestworkchat.app.network.models.response
 import com.google.gson.annotations.SerializedName
 import com.mangotestworkchat.app.data.UserDataToken
 
-data class CheckAuthCodeResponse(
+data class CheckAuthCodeServerResponse(
     @SerializedName("access_token") val accessToken: String,
     @SerializedName("is_user_exists") val isUserExists: Boolean,
     @SerializedName("refresh_token") val refreshToken: String,

@@ -1,10 +1,10 @@
 package com.mangotestworkchat.app.network
 
 import com.mangotestworkchat.app.network.api.ApiResult
-import com.mangotestworkchat.app.network.models.response.CheckAuthCodeResponse
-import com.mangotestworkchat.app.network.models.response.SendAuthCodeResponse
-import com.mangotestworkchat.app.network.models.response.ValidationErrorResponse
-import com.mangotestworkchat.app.network.models.response.UserRegisterResponse
+import com.mangotestworkchat.app.network.models.response.CheckAuthCodeServerResponse
+import com.mangotestworkchat.app.network.models.response.CurrentUserServerResponse
+import com.mangotestworkchat.app.network.models.response.SendAuthCodeServerResponse
+import com.mangotestworkchat.app.network.models.response.UserRegisterServerResponse
 
 
 interface INetwork {
@@ -12,13 +12,14 @@ interface INetwork {
         name: String,
         phone: String,
         username: String
-    ): ApiResult<UserRegisterResponse>
+    ): ApiResult<UserRegisterServerResponse>
     suspend fun checkAuthCode(
         phoneNumber: String,
         code: String
-    ): ApiResult<CheckAuthCodeResponse>
+    ): ApiResult<CheckAuthCodeServerResponse>
 
     suspend fun sendAuthCode(
         phoneNumber: String,
-    ): ApiResult<SendAuthCodeResponse>
+    ): ApiResult<SendAuthCodeServerResponse>
+    suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse>
 }
