@@ -1,6 +1,5 @@
 package com.mangotestworkchat.app.ui.authorization
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mangotestworkchat.app.R
 import com.mangotestworkchat.app.getApplicationComponent
-import com.mangotestworkchat.app.ui.theme.BgBoldRoboto18
+import com.mangotestworkchat.app.navigation.NavigationState
+import com.mangotestworkchat.app.navigation.Screen
+import com.mangotestworkchat.app.ui.registration.ButtonWithIcon
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.utils.MaskTransformation
-import com.mangotestworkchat.app.navigation.NavigationState
-import com.mangotestworkchat.app.navigation.Screen
 
 @Composable
 fun AuthorizationScreen(navigationState: NavigationState) {
@@ -46,18 +46,37 @@ fun AuthorizationScreen(navigationState: NavigationState) {
     val component = getApplicationComponent()
     val viewModel: AuthorizationViewModel = viewModel(factory = component.getViewModelFactory())
     val context = LocalContext.current.applicationContext
+    val state = viewModel.state.collectAsState()
 
     val userPhone = remember {
         mutableStateOf("")
     }
-
+    val authCode = remember {
+        mutableStateOf("")
+    }
     val isUserExist = remember {
         mutableStateOf(false)
     }
-
     val currentRegion = "Russia"
     val phoneMaskCountryData = viewModel.findMaskVM(currentRegion)
     val maskTransformation = viewModel.getMaskTransformationVM(phoneMaskCountryData.mask)
+
+    when (state.value) {
+        AuthorizationState.InitState -> {}
+        AuthorizationState.UserExists -> {
+            isUserExist.value = true
+        }
+
+        AuthorizationState.UserAbsent -> {
+            val userPhoneCurrent = "+79${userPhone.value}"
+            navigationState.navigateTo(Screen.RegistrationScreen.getRouteWithArgs(userPhoneCurrent))
+        }
+
+        is AuthorizationState.AuthorizationCorrect -> {
+            viewModel.saveUserDataTokenVM((state.value as AuthorizationState.AuthorizationCorrect).data.toUserDataToken())
+            navigationState.navigateTo(Screen.ChatScreen.route)
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -86,22 +105,16 @@ fun AuthorizationScreen(navigationState: NavigationState) {
             maxChar = phoneMaskCountryData.maxChar
         ) {
             val userPhoneCurrent = "+79${userPhone.value}"
-            viewModel.checkAuthVM(context = context, userPhoneCurrent)
+            viewModel.sendAuthVM(context = context, userPhoneCurrent)
         }
 
         if (isUserExist.value) {
-            EnterSmsCodeTextField()
-        }
-
-        Text(
-            modifier = Modifier.clickable {
+            EnterSmsCodeTextField(authCode)
+            ButtonWithIcon(textButton = "Отправить код потверждения") {
                 val userPhoneCurrent = "+79${userPhone.value}"
-                navigationState.navigateTo(Screen.RegistrationScreen.getRouteWithArgs(userPhoneCurrent))
-            },
-            text = "Регистрация нового пользователя",
-            style = BgBoldRoboto18
-        )
-
+                viewModel.checkAuthCodeVM(context, userPhoneCurrent, authCode.value)
+            }
+        }
     }
 }
 
@@ -141,13 +154,14 @@ fun PhoneNumberTextFieldWithMask(
 }
 
 @Composable
-fun EnterSmsCodeTextField() {
-    var password by rememberSaveable { mutableStateOf("") }
+fun EnterSmsCodeTextField(authCode: MutableState<String>) {
+
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
+
     TextField(
-        value = password,
+        value = authCode.value,
         onValueChange = {
-            password = it
+            authCode.value = it
         },
         singleLine = true,
         label = {

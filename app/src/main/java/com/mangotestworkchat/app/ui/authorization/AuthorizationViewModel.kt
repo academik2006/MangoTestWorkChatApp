@@ -2,22 +2,25 @@ package com.mangotestworkchat.app.ui.authorization
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.granch.network.models.api.ApiResult
+import com.mangotestworkchat.app.network.api.ApiResult
 import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.ViewModelBase
 import com.mangotestworkchat.app.network.INetwork
+import com.mangotestworkchat.app.network.models.response.CheckAuthCodeResponse
 import com.mangotestworkchat.app.repository.Repository
 import com.mangotestworkchat.app.utils.MaskTransformation
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthorizationViewModel @Inject constructor(
-    private val repository: Repository,
+    repository: Repository,
     private val iNetwork: INetwork
-) : ViewModelBase() {
+) : ViewModelBase(repository) {
+
+    val state = MutableStateFlow<AuthorizationState>(AuthorizationState.InitState)
 
     private fun createCountryMaskDataListVM(): List<PhoneMaskCountryData> {
         return listOf(
@@ -36,7 +39,7 @@ class AuthorizationViewModel @Inject constructor(
         return MaskTransformation(maskText)
     }
 
-    fun checkAuthVM(context: Context, userPhoneCurrent: String) {
+    fun sendAuthVM(context: Context, userPhoneCurrent: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
             when (val result = iNetwork.sendAuthCode(userPhoneCurrent)) {
@@ -45,10 +48,30 @@ class AuthorizationViewModel @Inject constructor(
                         APP_LOG,
                         "sendAuthCode: получен ответ на запрос авторизации ${result.successData}"
                     )
-                    //_contactList.emit(contactList)
+                    if (result.successData.isSuccess) {
+                        state.emit(AuthorizationState.UserExists)
+                    } else state.emit(AuthorizationState.UserAbsent)
                 }
                 is ApiResult.Error -> {
-                    //_contactList.emit(listOf())
+                    showToastToUser(context, result.message)
+                }
+            }
+        }
+    }
+    fun checkAuthCodeVM(context: Context, userPhoneCurrent: String, code: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+
+            when (val result = iNetwork.checkAuthCode(userPhoneCurrent, code)){
+                is ApiResult.Success -> {
+                    Log.d(
+                        APP_LOG,
+                        "checkAuthCodeVM: получен ответ на проверку кода авторизации ${result.successData}"
+                    )
+                    if (result.successData.isUserExists) {
+                        state.emit(AuthorizationState.AuthorizationCorrect(result.successData))
+                    } else state.emit(AuthorizationState.UserAbsent)
+                }
+                is ApiResult.Error -> {
                     showToastToUser(context, result.message)
                 }
             }

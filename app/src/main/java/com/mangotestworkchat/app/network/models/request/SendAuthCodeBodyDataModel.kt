@@ -1,6 +1,6 @@
 package com.mangotestworkchat.app.network.models.request
+import com.google.gson.annotations.SerializedName
 
 data class SendAuthCodeBodyDataModel(
-    val phoneNumber: String,
-    val code: String? = null
+    @SerializedName ("phone") val phone: String
 )

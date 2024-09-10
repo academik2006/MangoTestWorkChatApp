@@ -1,4 +1,6 @@
-package com.granch.network.models.api
+package com.mangotestworkchat.app.network.api
+
+import com.granch.network.models.api.ParseApiError
 import retrofit2.Response
 
 sealed class ApiResult<out T> {
@@ -9,7 +11,7 @@ sealed class ApiResult<out T> {
 
 fun <T : Any> handleApiError(resp: Response<T>): ApiResult.Error {
     val error = ParseApiError.parseError(resp)
-    return ApiResult.Error(Exception(error.message))
+    return ApiResult.Error(exception = Exception(error.message), message = "Запрос не выполнен. Код ошибки: ${resp.code()}, описание ${resp.message()}")
 }
 
 fun <T : Any> handleSuccess(response: Response<T>): ApiResult<T> {

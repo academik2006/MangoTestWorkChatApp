@@ -1,3 +1,5 @@
-package com.granch.network.models.api
+package com.mangotestworkchat.app.network.api
 
-data class APIError(val message: String = "")
+data class APIError(val message: String) {
+    constructor() : this("")
+}

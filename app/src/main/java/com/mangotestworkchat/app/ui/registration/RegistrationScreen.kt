@@ -1,6 +1,7 @@
 package com.mangotestworkchat.app.ui.registration
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +44,8 @@ import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.navigation.NavigationState
+import com.mangotestworkchat.app.navigation.Screen
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @Composable
@@ -49,7 +53,7 @@ fun RegistrationScreen(navigationState: NavigationState, phone: String) {
     val component = getApplicationComponent()
     val viewModel: RegistrationViewModel = viewModel(factory = component.getViewModelFactory())
     val context = LocalContext.current.applicationContext
-
+    val state = viewModel.state.collectAsState()
 
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -61,8 +65,16 @@ fun RegistrationScreen(navigationState: NavigationState, phone: String) {
         mutableStateOf("")
     }
 
-    val isShowRegistrationButton = remember {
-        mutableStateOf(false)
+    when (state.value) {
+        RegistrationState.InitState -> {}
+        is RegistrationState.SuccessRegisterNewUser -> {
+            viewModel.saveUserDataTokenVM((state.value as RegistrationState.SuccessRegisterNewUser).data.toUserDataToken())
+            navigationState.navigateTo(Screen.ChatScreen.route)
+        }
+        is RegistrationState.ErrorRegisterNewUser -> viewModel.showToastToUser(
+            context,
+            (state.value as RegistrationState.ErrorRegisterNewUser).message
+        )
     }
 
     Column(
@@ -87,17 +99,25 @@ fun RegistrationScreen(navigationState: NavigationState, phone: String) {
             maskText = phone,
         )
         NameTextField(name = name, focusManager, keyboardController)
-        UserNameTextField(userName = userName, focusManager, keyboardController, isShowRegistrationButton)
-        if (isShowRegistrationButton.value) {
-            ButtonWithIcon("Регистрация") {
-                val isDataValid = viewModel.isDataUserValidVM(
-                    context = context,
+        UserNameTextField(
+            userName = userName,
+            focusManager,
+            keyboardController
+        )
+
+        ButtonWithIcon("Регистрация") {
+            val isDataValid = viewModel.validateLatinLetters(userName.value)
+            if (isDataValid) {
+                viewModel.registerNewUserVM(
+                    phone = phone,
                     name = name.value,
                     userName = userName.value
                 )
-                Log.d(APP_LOG, "isDataValid: $isDataValid")
-
             }
+            else {
+                viewModel.showToastToUser(context, "Не менее 6 символов, только латинские буквы и цифры")
+            }
+            Log.d(APP_LOG, "isDataValid: $isDataValid")
         }
     }
 }
@@ -157,8 +177,7 @@ fun NameTextField(
 fun UserNameTextField(
     userName: MutableState<String>,
     focusManager: FocusManager,
-    keyboardController: SoftwareKeyboardController?,
-    isShowRegistrationButton: MutableState<Boolean>
+    keyboardController: SoftwareKeyboardController?
 ) {
 
     TextField(
@@ -175,7 +194,6 @@ fun UserNameTextField(
         keyboardActions = KeyboardActions(onDone = {
             keyboardController?.hide()
             focusManager.clearFocus()
-            isShowRegistrationButton.value = true
         }),
         label = {
             Text(text = "Имя в системе")
@@ -185,9 +203,8 @@ fun UserNameTextField(
                 imageVector = ImageVector.vectorResource(R.drawable.badge_24px),
                 contentDescription = "Localized description"
             )
-        },
-
-        )
+        }
+    )
 }
 
 @Composable

@@ -1,7 +1,7 @@
 package com.mangotestworkchat.app.network.models.response
 
+import com.google.gson.annotations.SerializedName
+
 data class SendAuthCodeResponse(
-    val loc: List<String>,
-    val msg: String,
-    val type: String
-) : ResultResponseBase()
+    @SerializedName("is_success") val isSuccess: Boolean
+)
