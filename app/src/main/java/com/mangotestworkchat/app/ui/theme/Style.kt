@@ -1,5 +1,6 @@
 package com.mangotestworkchat.app.ui.theme
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,6 +23,12 @@ val RedRegularRoboto14 = TextStyle(
     color = red_APP,
     fontFamily = FontFamily(Font(R.font.roboto_regular)),
     fontSize = 14.sp
+)
+
+val BlackRegularRoboto12 = TextStyle(
+    color = Color.Black,
+    fontFamily = FontFamily(Font(R.font.roboto_regular)),
+    fontSize = 12.sp
 )
 
 val BgBoldRoboto14 = TextStyle(

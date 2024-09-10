@@ -1,22 +1,18 @@
 package com.mangotestworkchat.app.ui.registration
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.mangotestworkchat.app.network.api.ApiResult
 import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.ViewModelBase
-import com.mangotestworkchat.app.network.INetwork
 import com.mangotestworkchat.app.repository.Repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 class RegistrationViewModel @Inject constructor(
-    repository: Repository,
-    private val iNetwork: INetwork
+    private val repository: Repository
 ) : ViewModelBase(repository) {
 
     val state = MutableStateFlow<RegistrationState>(RegistrationState.InitState)
@@ -34,7 +30,7 @@ class RegistrationViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             when (val result =
-                iNetwork.registerNewUser(name = name, phone = phone, username = userName)) {
+                repository.registerNewUser(name = name, phone = phone, username = userName)) {
                 is ApiResult.Success -> {
                     Log.d(
                         APP_LOG,
@@ -48,9 +44,5 @@ class RegistrationViewModel @Inject constructor(
             }
         }
     }
-}
-
-fun isContainsSpecialCharacters(text: String): Boolean {
-    return text.contains("[!\"#$%&'()*+,-./:;\\\\<=>?@\\[\\]^_`{|}~]".toRegex())
 }
 

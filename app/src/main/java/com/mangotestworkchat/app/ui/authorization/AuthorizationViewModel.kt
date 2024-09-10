@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.mangotestworkchat.app.network.api.ApiResult
 import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.ViewModelBase
-import com.mangotestworkchat.app.network.INetwork
 import com.mangotestworkchat.app.repository.Repository
 import com.mangotestworkchat.app.utils.MaskTransformation
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthorizationViewModel @Inject constructor(
-    repository: Repository,
-    private val iNetwork: INetwork
+    private val repository: Repository
 ) : ViewModelBase(repository) {
 
     val state = MutableStateFlow<AuthorizationState>(AuthorizationState.InitState)
@@ -41,7 +39,7 @@ class AuthorizationViewModel @Inject constructor(
     fun sendAuthVM(context: Context, userPhoneCurrent: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            when (val result = iNetwork.sendAuthCode(userPhoneCurrent)) {
+            when (val result = repository.sendAuthCode(userPhoneCurrent)) {
                 is ApiResult.Success -> {
                     Log.d(
                         APP_LOG,
@@ -60,7 +58,7 @@ class AuthorizationViewModel @Inject constructor(
     fun checkAuthCodeVM(context: Context, userPhoneCurrent: String, code: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
-            when (val result = iNetwork.checkAuthCode(userPhoneCurrent, code)){
+            when (val result = repository.checkAuthCode(userPhoneCurrent, code)){
                 is ApiResult.Success -> {
                     Log.d(
                         APP_LOG,

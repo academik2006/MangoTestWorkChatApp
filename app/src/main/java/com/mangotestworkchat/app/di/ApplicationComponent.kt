@@ -2,7 +2,6 @@ package com.mangotestworkchat.app.di
 
 import android.app.Application
 import com.mangotestworkchat.app.App
-import com.mangotestworkchat.app.di.modules.NetworkModule
 import com.mangotestworkchat.app.di.modules.RepositoryModule
 import com.mangotestworkchat.app.di.modules.SystemServiceModule
 import com.mangotestworkchat.app.di.modules.ViewModelModule
@@ -15,8 +14,7 @@ import dagger.Component
     modules = [
         RepositoryModule::class,
         SystemServiceModule::class,
-        ViewModelModule::class,
-        NetworkModule::class
+        ViewModelModule::class
     ]
 )
 interface ApplicationComponent {
