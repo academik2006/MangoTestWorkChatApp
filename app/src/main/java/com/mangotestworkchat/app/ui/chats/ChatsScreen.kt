@@ -44,10 +44,6 @@ import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
 import com.mangotestworkchat.app.ui.theme.BgBoldRoboto16
 import com.mangotestworkchat.app.ui.theme.BgBoldRoboto18
-import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
-import com.mangotestworkchat.app.ui.theme.BlackRegularRoboto12
-import com.mangotestworkchat.app.ui.theme.GreyRegularRoboto14
-
 
 @Composable
 fun ChatsScreen(navigationState: NavigationState) {
@@ -129,7 +125,7 @@ fun ChatItemRW(
     )
     {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(5.dp),
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         )
