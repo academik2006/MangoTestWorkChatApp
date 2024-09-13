@@ -32,10 +32,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mangotestworkchat.app.R
+import com.mangotestworkchat.app.customView.ButtonWithIcon
 import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
-import com.mangotestworkchat.app.ui.registration.ButtonWithIcon
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.utils.MaskTransformation

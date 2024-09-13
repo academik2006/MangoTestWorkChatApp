@@ -10,7 +10,7 @@ import com.mangotestworkchat.app.network.models.response.UserRegisterServerRespo
 import retrofit2.Response
 import retrofit2.http.*
 
-interface ApiServer {
+interface ApiService {
 
     @POST("api/v1/users/register/")
     suspend fun registerNewUser(
@@ -28,6 +28,8 @@ interface ApiServer {
     ): Response<CheckAuthCodeServerResponse>
 
     @GET("api/v1/users/me/")
-    suspend fun getCurrentUser(): Response<CurrentUserServerResponse>
+    suspend fun getCurrentUser(
+        @Header("Authorization") accessToken: String)
+    : Response<CurrentUserServerResponse>
 
 }

@@ -25,6 +25,8 @@ class RepositoryImpl @Inject constructor() : Repository {
     override fun saveUserDataToken(userDataToken: UserDataToken) {
         userDataTokenProfile = userDataToken
     }
+
+
     override suspend fun registerNewUser(
         name: String,
         phone: String,
@@ -71,7 +73,8 @@ class RepositoryImpl @Inject constructor() : Repository {
 
     override suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse> {
         return try {
-            val response = api.getCurrentUser()
+            val response = api.getCurrentUser(userDataTokenProfile?.accessToken ?: throw Exception("No fresh token"))
+            Log.d(APP_LOG, "getCurrentUser: получен ответ на запрос данных пользователя $response")
             if (response.isSuccessful) {
                 handleSuccess(response)
             } else handleApiError(response)

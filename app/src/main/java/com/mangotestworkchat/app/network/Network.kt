@@ -31,8 +31,8 @@ class Network {
             .build()
     }
 
-    fun getApiServer(): ApiServer {
-        return getRetrofitBuilder().create(ApiServer::class.java)
+    fun getApiServer(): ApiService {
+        return getRetrofitBuilder().create(ApiService::class.java)
             ?: throw java.lang.RuntimeException("Не создан класс ApiServer")
     }
 }

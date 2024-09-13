@@ -18,7 +18,7 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.ProfileScreen.route
+        startDestination = Screen.AuthorizationScreen.route
     )
     {
 

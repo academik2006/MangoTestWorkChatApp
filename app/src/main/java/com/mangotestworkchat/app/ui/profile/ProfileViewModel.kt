@@ -19,6 +19,7 @@ class ProfileViewModel @Inject constructor(
     val state = MutableStateFlow<ProfileState>(ProfileState.InitState)
 
     fun getCurrentUserDataVM(context: Context) {
+
         viewModelScope.launch(Dispatchers.IO) {
             when (val result = repository.getCurrentUser()){
                 is ApiResult.Success -> {

@@ -5,15 +5,23 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -30,6 +38,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
@@ -42,11 +51,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.data.CurrentUserProfileData
 import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.navigation.NavigationState
 import java.io.ByteArrayOutputStream
 import com.mangotestworkchat.app.R
+import com.mangotestworkchat.app.customView.ButtonWithIcon
 import com.mangotestworkchat.app.ui.theme.BlackRegularRoboto12
 
 @Composable
@@ -57,11 +68,16 @@ fun ProfileScreen(navigationState: NavigationState) {
     val context = LocalContext.current.applicationContext
     val state = viewModel.state.collectAsState()
 
-    val cityState = remember { mutableStateOf("") }
-    val birthdayState = remember { mutableStateOf("") }
-
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+
+    val cityState = remember { mutableStateOf("") }
+    val userPhone = remember { mutableStateOf("") }
+    val userName = remember { mutableStateOf("") }
+    val birthdayState = remember { mutableStateOf("") }
+    val zodiacSignState = remember { mutableStateOf("") }
+
+    val scrollState = rememberScrollState()
 
     var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     val bitmap = remember { mutableStateOf<Bitmap?>(null) }
@@ -117,114 +133,132 @@ fun ProfileScreen(navigationState: NavigationState) {
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically))
+        verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
+    )
     {
-        ShowProfile(profileData, focusManager, keyboardController, cityState,birthdayState)
-    }
 
+        Image(
+            painter = painterResource(id = R.drawable.avatar),
+            contentDescription = "Avatar",
+            modifier = Modifier
+                .size(140.dp)
+                .clip(CircleShape)
+                .clickable {
+                    launcher.launch("image/*")
+                }
+        )
+
+        ShowProfile(
+            keyboardController,
+            focusManager,
+            cityState = cityState,
+            userPhone = userPhone,
+            userName = userName,
+            birthdayState = birthdayState,
+            zodiacSignState = zodiacSignState
+        )
+    }
 }
 
 @Composable
 fun ShowProfile(
-    profileData: MutableState<CurrentUserProfileData>,
-    focusManager: FocusManager,
     keyboardController: SoftwareKeyboardController?,
+    focusManager: FocusManager,
     cityState: MutableState<String>,
-    birthdayState: MutableState<String>
+    userPhone: MutableState<String>,
+    userName: MutableState<String>,
+    birthdayState: MutableState<String>,
+    zodiacSignState: MutableState<String>
 ) {
 
-    val scrollState = rememberScrollState()
+    ProfileItemTextField(
+        keyboardController,
+        focusManager,
+        value = userPhone,
+        onValueChange = {},
+        imageVector = Icons.Filled.Phone,
+        enabled = false,
+        keyboardOptions = KeyboardOptions.Default,
+        supportingText = "Номер телефона"
+    )
 
-    Column(
-        modifier = Modifier
-            .background(color = Color.White)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
+    ProfileItemTextField(
+        keyboardController,
+        focusManager,
+        value = userName,
+        onValueChange = {},
+        imageVector = Icons.Filled.Face,
+        enabled = false,
+        keyboardOptions = KeyboardOptions.Default,
+        supportingText = "Имя в системе"
+    )
+
+    ProfileItemTextField(
+        keyboardController,
+        focusManager,
+        value = cityState,
+        onValueChange = {
+            cityState.value = it
+        },
+        imageVector = Icons.Filled.Home,
+        enabled = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        supportingText = "Город проживания"
+
+    )
+
+    ProfileItemTextField(
+        keyboardController,
+        focusManager,
+        value = birthdayState,
+        onValueChange = {
+            birthdayState.value = it
+        },
+        imageVector = Icons.Filled.DateRange,
+        enabled = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+        supportingText = "Дата рождения"
+    )
+
+    ProfileItemTextField(
+        keyboardController,
+        focusManager,
+        value = zodiacSignState,
+        onValueChange = {},
+        imageVector = Icons.Filled.Info,
+        enabled = false,
+        keyboardOptions = KeyboardOptions.Default,
+        supportingText = "Знак зодиака по дате рождения"
+    )
+
+    ButtonWithIcon(
+        textButton = "Сохранить изменения",
+        iconId = R.drawable.save_24px
     )
     {
-        Image(
-            modifier = Modifier.size(64.dp),
-            painter = painterResource(id = R.drawable.avatar),
-            contentDescription = ""
-        )
 
-        ProfileItemTextField(
-            value = profileData.value.phone,
-            onValueChange = {},
-            imageVector = Icons.Filled.Phone,
-            enabled = false,
-            keyboardOptions = KeyboardOptions.Default,
-            keyboardActions = KeyboardActions.Default,
-            supportingText = "Номер телефона"
-        )
-
-        ProfileItemTextField(
-            value = profileData.value.name,
-            onValueChange = {},
-            imageVector = Icons.Filled.Face,
-            enabled = false,
-            keyboardOptions = KeyboardOptions.Default,
-            keyboardActions = KeyboardActions.Default,
-            supportingText = "Имя в системе"
-        )
-
-        ProfileItemTextField(
-            value = profileData.value.city,
-            onValueChange = {
-                cityState.value = it
-            },
-            imageVector = Icons.Filled.Home,
-            enabled = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            keyboardActions = KeyboardActions(onDone = {
-                focusManager.moveFocus(FocusDirection.Down)
-            }),
-            supportingText = "Город проживания"
-
-        )
-
-        ProfileItemTextField(
-            value = profileData.value.birthday,
-            onValueChange = {
-                birthdayState.value = it
-            },
-            imageVector = Icons.Filled.DateRange,
-            enabled = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-                focusManager.clearFocus()
-            }),
-            supportingText = "Дата рождения"
-        )
-
-        ProfileItemTextField(
-            value = " ",
-            onValueChange = {},
-            imageVector = Icons.Filled.Info,
-            enabled = false,
-            keyboardOptions = KeyboardOptions.Default,
-            keyboardActions = KeyboardActions.Default,
-            supportingText = "Знак зодиака по дате рождения"
-        )
     }
+
 }
 
 @Composable
-fun ProfileItemTextField (
-    value: String,
+fun ProfileItemTextField(
+    keyboardController: SoftwareKeyboardController?,
+    focusManager: FocusManager,
+    value: MutableState<String>,
     onValueChange: (String) -> Unit,
     imageVector: ImageVector,
     enabled: Boolean,
     keyboardOptions: KeyboardOptions,
-    supportingText: String,
-    keyboardActions: KeyboardActions
+    supportingText: String
 ) {
+
     OutlinedTextField(
-        value = value,
+        value = value.value,
         onValueChange = onValueChange,
         leadingIcon = {
             Icon(
@@ -233,9 +267,14 @@ fun ProfileItemTextField (
             )
         },
         enabled = enabled,
+        singleLine = true,
         maxLines = 1,
         keyboardOptions = keyboardOptions,
-        keyboardActions = keyboardActions,
+        keyboardActions = KeyboardActions(onGo = {
+            Log.d(APP_LOG, "ProfileItemTextField: сработало нажатие на клаву")
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        }),
         supportingText = {
             Text(text = supportingText, style = BlackRegularRoboto12)
         }

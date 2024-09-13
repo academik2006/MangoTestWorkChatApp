@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.R
+import com.mangotestworkchat.app.customView.ButtonWithIcon
 import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
@@ -105,7 +106,10 @@ fun RegistrationScreen(navigationState: NavigationState, phone: String) {
             keyboardController
         )
 
-        ButtonWithIcon("Регистрация") {
+        ButtonWithIcon(
+            textButton = "Регистрация",
+            iconId = R.drawable.how_to_reg_24px)
+        {
             val isDataValid = viewModel.validateLatinLetters(userName.value)
             if (isDataValid) {
                 viewModel.registerNewUserVM(
@@ -206,38 +210,3 @@ fun UserNameTextField(
         }
     )
 }
-
-@Composable
-fun ButtonWithIcon(textButton: String, onClick: () -> Unit) {
-    Button(
-        onClick = {
-            onClick.invoke()
-        },
-        contentPadding = ButtonDefaults.ButtonWithIconContentPadding
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.how_to_reg_24px),
-            contentDescription = "Localized description",
-            modifier = Modifier.size(ButtonDefaults.IconSize)
-        )
-        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-        Text(textButton)
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
