@@ -13,12 +13,13 @@ fun AppNavGraph(
     navHostController: NavHostController,
     authorizationScreen: @Composable () -> Unit,
     registrationScreen: @Composable (phone: String) -> Unit,
+    chatsScreen: @Composable () -> Unit,
     chatScreen: @Composable () -> Unit,
     profileScreen: @Composable () -> Unit
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.AuthorizationScreen.route
+        startDestination = Screen.ChatsScreen.route
     )
     {
 
@@ -28,6 +29,9 @@ fun AppNavGraph(
         composable(Screen.RegistrationScreen.route) { navBackStackEntry ->
             val userPhone = navBackStackEntry.arguments?.getString(USER_PHONE_KEY)
             registrationScreen(userPhone ?: "")
+        }
+        composable(Screen.ChatsScreen.route) {
+            chatsScreen()
         }
         composable(Screen.ChatScreen.route) {
             chatScreen()

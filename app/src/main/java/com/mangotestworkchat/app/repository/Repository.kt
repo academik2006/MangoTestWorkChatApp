@@ -6,6 +6,7 @@ import com.mangotestworkchat.app.network.models.response.CheckAuthCodeServerResp
 import com.mangotestworkchat.app.network.models.response.CurrentUserServerResponse
 import com.mangotestworkchat.app.network.models.response.SendAuthCodeServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRegisterServerResponse
+import com.mangotestworkchat.app.ui.chats.ChatItemModel
 
 interface Repository {
     fun saveUserDataToken (userDataToken: UserDataToken)
@@ -24,4 +25,5 @@ interface Repository {
         phoneNumber: String,
     ): ApiResult<SendAuthCodeServerResponse>
     suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse>
+    fun getChatsList() : List<ChatItemModel>
 }

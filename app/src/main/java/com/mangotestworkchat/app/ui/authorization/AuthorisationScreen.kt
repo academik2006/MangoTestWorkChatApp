@@ -74,7 +74,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
 
         is AuthorizationState.AuthorizationCorrect -> {
             viewModel.saveUserDataTokenVM((state.value as AuthorizationState.AuthorizationCorrect).data.toUserDataToken())
-            navigationState.navigateTo(Screen.ChatScreen.route)
+            navigationState.navigateTo(Screen.ChatsScreen.route)
         }
     }
 
@@ -170,7 +170,7 @@ fun EnterSmsCodeTextField(authCode: MutableState<String>) {
         visualTransformation = if (passwordHidden) PasswordVisualTransformation()
         else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.NumberPassword
         ),
         trailingIcon = {
             IconButton(onClick = {

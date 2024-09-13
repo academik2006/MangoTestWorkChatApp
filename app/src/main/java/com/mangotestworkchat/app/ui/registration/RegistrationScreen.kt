@@ -1,10 +1,8 @@
 package com.mangotestworkchat.app.ui.registration
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,8 +10,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -46,7 +42,6 @@ import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
 import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
-import kotlinx.coroutines.flow.asStateFlow
 
 
 @Composable
@@ -70,7 +65,7 @@ fun RegistrationScreen(navigationState: NavigationState, phone: String) {
         RegistrationState.InitState -> {}
         is RegistrationState.SuccessRegisterNewUser -> {
             viewModel.saveUserDataTokenVM((state.value as RegistrationState.SuccessRegisterNewUser).data.toUserDataToken())
-            navigationState.navigateTo(Screen.ChatScreen.route)
+            navigationState.navigateTo(Screen.ChatsScreen.route)
         }
         is RegistrationState.ErrorRegisterNewUser -> viewModel.showToastToUser(
             context,

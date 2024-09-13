@@ -2,24 +2,15 @@ package com.mangotestworkchat.app.ui
 
 
 import android.annotation.SuppressLint
-import android.icu.text.ListFormatter.Width
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -36,17 +26,14 @@ import com.mangotestworkchat.app.navigation.AppNavGraph
 import com.mangotestworkchat.app.navigation.NavigationItem
 import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
-import com.mangotestworkchat.app.R
-import com.mangotestworkchat.app.di.ViewModelFactory
 import com.mangotestworkchat.app.ui.authorization.AuthorizationScreen
 import com.mangotestworkchat.app.ui.chat.ChatScreen
+import com.mangotestworkchat.app.ui.chats.ChatsScreen
 import com.mangotestworkchat.app.ui.profile.ProfileScreen
 import com.mangotestworkchat.app.ui.registration.RegistrationScreen
-import com.mangotestworkchat.app.ui.theme.red_APP
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseAppScreen() {
     val snackBarHostState = SnackbarHostState()
@@ -74,7 +61,8 @@ fun BaseAppScreen() {
                 NavigationBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(48.dp),
+                    windowInsets = WindowInsets.ime
                 )
                 {
                     items.forEachIndexed { index, item ->
@@ -100,6 +88,9 @@ fun BaseAppScreen() {
             navHostController = navigationState.navHostController,
             authorizationScreen = {
                 AuthorizationScreen(navigationState)
+            },
+            chatsScreen = {
+                ChatsScreen(navigationState = navigationState)
             },
             chatScreen = {
                 ChatScreen(navigationState = navigationState)

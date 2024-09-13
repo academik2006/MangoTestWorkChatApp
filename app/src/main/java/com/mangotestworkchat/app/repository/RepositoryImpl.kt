@@ -2,6 +2,7 @@ package com.mangotestworkchat.app.repository
 
 import android.util.Log
 import com.mangotestworkchat.app.APP_LOG
+import com.mangotestworkchat.app.R
 import com.mangotestworkchat.app.data.UserDataToken
 import com.mangotestworkchat.app.di.scope.ApplicationScope
 import com.mangotestworkchat.app.network.Network
@@ -15,6 +16,7 @@ import com.mangotestworkchat.app.network.models.response.CheckAuthCodeServerResp
 import com.mangotestworkchat.app.network.models.response.CurrentUserServerResponse
 import com.mangotestworkchat.app.network.models.response.SendAuthCodeServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRegisterServerResponse
+import com.mangotestworkchat.app.ui.chats.ChatItemModel
 import javax.inject.Inject
 
 @ApplicationScope
@@ -81,6 +83,13 @@ class RepositoryImpl @Inject constructor() : Repository {
         } catch (e: Exception) {
             ApiResult.Error(e)
         }
+    }
+
+    override fun getChatsList(): List<ChatItemModel> {
+        return listOf(
+            ChatItemModel(0,icon = R.drawable.mashrooms, "Грибы", "Выезжаем в 5.00 утра", "4:49"),
+            ChatItemModel(1, icon = R.drawable.sport, "Спорт", "Сегодня тренируемся в 21.00 утра", "10.25")
+        )
     }
 
 

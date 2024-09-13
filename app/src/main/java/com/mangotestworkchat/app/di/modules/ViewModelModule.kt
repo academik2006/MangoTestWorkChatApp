@@ -5,6 +5,7 @@ import com.mangotestworkchat.app.ViewModelBase
 import com.mangotestworkchat.app.di.scope.ViewModelKey
 import com.mangotestworkchat.app.ui.authorization.AuthorizationViewModel
 import com.mangotestworkchat.app.ui.chat.ChatViewModel
+import com.mangotestworkchat.app.ui.chats.ChatsViewModel
 import com.mangotestworkchat.app.ui.profile.ProfileViewModel
 import com.mangotestworkchat.app.ui.registration.RegistrationViewModel
 import dagger.Binds
@@ -31,6 +32,11 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(RegistrationViewModel::class)
     fun bindRegistrationViewModel(viewModel: RegistrationViewModel) : ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ChatsViewModel::class)
+    fun bindChatsViewModel(viewModel: ChatsViewModel) : ViewModel
 
     @Binds
     @IntoMap
