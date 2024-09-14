@@ -1,9 +1,11 @@
 package com.mangotestworkchat.app.ui.authorization
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -109,8 +111,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         }
 
         if (isUserExist.value) {
-            EnterSmsCodeTextField(authCode)
-            ButtonWithIcon(textButton = "Отправить код потверждения") {
+            EnterSmsCodeTextField(authCode){
                 val userPhoneCurrent = "+79${userPhone.value}"
                 viewModel.checkAuthCodeVM(context, userPhoneCurrent, authCode.value)
             }
@@ -154,7 +155,11 @@ fun PhoneNumberTextFieldWithMask(
 }
 
 @Composable
-fun EnterSmsCodeTextField(authCode: MutableState<String>) {
+fun EnterSmsCodeTextField(
+    authCode: MutableState<String>,
+    onDone: () -> Unit
+)
+{
 
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
 
@@ -172,6 +177,9 @@ fun EnterSmsCodeTextField(authCode: MutableState<String>) {
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.NumberPassword
         ),
+        keyboardActions = KeyboardActions(onDone = {
+           onDone.invoke()
+        }),
         trailingIcon = {
             IconButton(onClick = {
                 passwordHidden = !passwordHidden

@@ -6,20 +6,16 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -39,9 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -132,6 +126,33 @@ fun ProfileScreen(navigationState: NavigationState) {
 
     }
 
+    ShowProfileData(
+        profileData,
+        scrollState,
+        launcher,
+        keyboardController,
+        focusManager,
+        cityState,
+        userPhone,
+        userName,
+        birthdayState,
+        zodiacSignState
+    )
+}
+
+@Composable
+private fun ShowProfileData(
+    profileData: MutableState<CurrentUserProfileData>,
+    scrollState: ScrollState,
+    launcher: ManagedActivityResultLauncher<String, Uri?>,
+    keyboardController: SoftwareKeyboardController?,
+    focusManager: FocusManager,
+    cityState: MutableState<String>,
+    userPhone: MutableState<String>,
+    userName: MutableState<String>,
+    birthdayState: MutableState<String>,
+    zodiacSignState: MutableState<String>
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -141,8 +162,10 @@ fun ProfileScreen(navigationState: NavigationState) {
     )
     {
 
+        val avatarId = if (profileData.value.avatar == null) R.drawable.avatar else R.drawable.sport
+
         Image(
-            painter = painterResource(id = R.drawable.avatar),
+            painter = painterResource(id = avatarId),
             contentDescription = "Avatar",
             modifier = Modifier
                 .size(140.dp)
@@ -152,104 +175,92 @@ fun ProfileScreen(navigationState: NavigationState) {
                 }
         )
 
-        ShowProfile(
+        ProfileItemConstTextField (
+            value = profileData.value.phone,
+            imageVector = Icons.Filled.Phone,
+            supportingText = "Номер телефона"
+        )
+
+        ProfileItemConstTextField (
+            value = profileData.value.name,
+            imageVector = Icons.Filled.Face,
+            supportingText = "Имя в системе"
+        )
+
+        ProfileItemEditableTextField(
             keyboardController,
             focusManager,
-            cityState = cityState,
-            userPhone = userPhone,
-            userName = userName,
-            birthdayState = birthdayState,
-            zodiacSignState = zodiacSignState
+            value = profileData.value.city ?: "",
+            onValueChange = {
+                cityState.value = it
+            },
+            imageVector = Icons.Filled.Home,
+            enabled = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            supportingText = "Город проживания"
+
         )
+
+        ProfileItemEditableTextField(
+            keyboardController,
+            focusManager,
+            value = profileData.value.birthday ?: "",
+            onValueChange = {
+                birthdayState.value = it
+            },
+            imageVector = Icons.Filled.DateRange,
+            enabled = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            supportingText = "Дата рождения"
+        )
+
+        ProfileItemConstTextField (
+            value = "Водолей",
+            imageVector = Icons.Filled.Info,
+            supportingText = "Знак зодиака по дате рождения"
+        )
+
+        ButtonWithIcon(
+            textButton = "Сохранить изменения",
+            iconId = R.drawable.save_24px
+        )
+        {
+
+        }
+
     }
 }
 
 @Composable
-fun ShowProfile(
-    keyboardController: SoftwareKeyboardController?,
-    focusManager: FocusManager,
-    cityState: MutableState<String>,
-    userPhone: MutableState<String>,
-    userName: MutableState<String>,
-    birthdayState: MutableState<String>,
-    zodiacSignState: MutableState<String>
+fun ProfileItemConstTextField(
+    value: String,
+    imageVector: ImageVector,
+    supportingText: String
 ) {
 
-    ProfileItemTextField(
-        keyboardController,
-        focusManager,
-        value = userPhone,
+    OutlinedTextField(
+        value = value,
         onValueChange = {},
-        imageVector = Icons.Filled.Phone,
-        enabled = false,
-        keyboardOptions = KeyboardOptions.Default,
-        supportingText = "Номер телефона"
-    )
-
-    ProfileItemTextField(
-        keyboardController,
-        focusManager,
-        value = userName,
-        onValueChange = {},
-        imageVector = Icons.Filled.Face,
-        enabled = false,
-        keyboardOptions = KeyboardOptions.Default,
-        supportingText = "Имя в системе"
-    )
-
-    ProfileItemTextField(
-        keyboardController,
-        focusManager,
-        value = cityState,
-        onValueChange = {
-            cityState.value = it
+        leadingIcon = {
+            Icon(
+                imageVector,
+                contentDescription = ""
+            )
         },
-        imageVector = Icons.Filled.Home,
-        enabled = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-        supportingText = "Город проживания"
-
-    )
-
-    ProfileItemTextField(
-        keyboardController,
-        focusManager,
-        value = birthdayState,
-        onValueChange = {
-            birthdayState.value = it
-        },
-        imageVector = Icons.Filled.DateRange,
-        enabled = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        supportingText = "Дата рождения"
-    )
-
-    ProfileItemTextField(
-        keyboardController,
-        focusManager,
-        value = zodiacSignState,
-        onValueChange = {},
-        imageVector = Icons.Filled.Info,
         enabled = false,
-        keyboardOptions = KeyboardOptions.Default,
-        supportingText = "Знак зодиака по дате рождения"
+        singleLine = true,
+        maxLines = 1,
+        supportingText = {
+            Text(text = supportingText, style = BlackRegularRoboto12)
+        }
     )
-
-    ButtonWithIcon(
-        textButton = "Сохранить изменения",
-        iconId = R.drawable.save_24px
-    )
-    {
-
-    }
-
 }
 
 @Composable
-fun ProfileItemTextField(
+fun ProfileItemEditableTextField(
     keyboardController: SoftwareKeyboardController?,
     focusManager: FocusManager,
-    value: MutableState<String>,
+    value: String,
     onValueChange: (String) -> Unit,
     imageVector: ImageVector,
     enabled: Boolean,
@@ -258,7 +269,7 @@ fun ProfileItemTextField(
 ) {
 
     OutlinedTextField(
-        value = value.value,
+        value = value,
         onValueChange = onValueChange,
         leadingIcon = {
             Icon(

@@ -55,10 +55,7 @@ fun ChatScreen(navigationState: NavigationState) {
             )
         )
     }
-
     ShowChat(messageList)
-
-
 }
 
 @Composable

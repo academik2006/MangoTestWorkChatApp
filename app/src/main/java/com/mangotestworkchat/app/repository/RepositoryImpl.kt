@@ -75,7 +75,7 @@ class RepositoryImpl @Inject constructor() : Repository {
 
     override suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse> {
         return try {
-            val response = api.getCurrentUser(userDataTokenProfile?.accessToken ?: throw Exception("No fresh token"))
+            val response = api.getCurrentUser("Bearer ${userDataTokenProfile?.accessToken ?: throw Exception("No fresh token")}")
             Log.d(APP_LOG, "getCurrentUser: получен ответ на запрос данных пользователя $response")
             if (response.isSuccessful) {
                 handleSuccess(response)
