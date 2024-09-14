@@ -44,6 +44,7 @@ import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
 import com.mangotestworkchat.app.ui.theme.BgBoldRoboto16
 import com.mangotestworkchat.app.ui.theme.BgBoldRoboto18
+import com.mangotestworkchat.app.ui.theme.BgRegularRoboto12
 
 @Composable
 fun ChatsScreen(navigationState: NavigationState) {
@@ -115,7 +116,8 @@ fun ChatItemRW(
         modifier = Modifier
             .fillMaxWidth()
             .padding(5.dp)
-            .height(48.dp).border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
+            .height(48.dp)
+            .border(width = 1.dp, color = Color.Black, shape = RoundedCornerShape(8.dp))
             .clickable {
                 onItemClick.invoke(chatItem.chatId)
             },
@@ -125,8 +127,10 @@ fun ChatItemRW(
     )
     {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         )
         {
@@ -139,8 +143,22 @@ fun ChatItemRW(
                     .clip(CircleShape)
 
             )
-            Text(text = chatItem.title, style = BgBoldRoboto16)
-            Text(text = chatItem.lastMessageTime, style = BgBoldRoboto18)
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column {
+                Text(text = chatItem.title, style = BgBoldRoboto16)
+                Text(text = chatItem.lastMessage, style = BgRegularRoboto12)
+
+            }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd)
+            {
+                Text(text = chatItem.lastMessageTime, style = BgBoldRoboto18)
+            }
+
+
         }
     }
 
