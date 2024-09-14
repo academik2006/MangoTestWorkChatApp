@@ -19,7 +19,7 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.ChatsScreen.route
+        startDestination = Screen.AuthorizationScreen.route
     )
     {
 

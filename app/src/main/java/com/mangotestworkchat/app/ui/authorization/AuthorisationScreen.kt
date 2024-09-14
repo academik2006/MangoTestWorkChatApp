@@ -1,31 +1,49 @@
 package com.mangotestworkchat.app.ui.authorization
 
-import android.content.Context
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -34,7 +52,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mangotestworkchat.app.R
-import com.mangotestworkchat.app.customView.ButtonWithIcon
 import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
@@ -63,6 +80,12 @@ fun AuthorizationScreen(navigationState: NavigationState) {
     val phoneMaskCountryData = viewModel.findMaskVM(currentRegion)
     val maskTransformation = viewModel.getMaskTransformationVM(phoneMaskCountryData.mask)
 
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     when (state.value) {
         AuthorizationState.InitState -> {}
         AuthorizationState.UserExists -> {
@@ -83,9 +106,8 @@ fun AuthorizationScreen(navigationState: NavigationState) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically),
-
-        )
+        verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
+    )
     {
 
         Icon(
@@ -101,6 +123,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         )
 
         PhoneNumberTextFieldWithMask(
+            focusRequester,
             userPhone = userPhone,
             maskTransformation = maskTransformation,
             maskText = phoneMaskCountryData.mask,
@@ -111,7 +134,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         }
 
         if (isUserExist.value) {
-            EnterSmsCodeTextField(authCode){
+            EnterSmsCodeTextField(authCode) {
                 val userPhoneCurrent = "+79${userPhone.value}"
                 viewModel.checkAuthCodeVM(context, userPhoneCurrent, authCode.value)
             }
@@ -121,6 +144,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
 
 @Composable
 fun PhoneNumberTextFieldWithMask(
+    focusRequester: FocusRequester,
     userPhone: MutableState<String>,
     maskTransformation: MaskTransformation,
     maskText: String,
@@ -129,37 +153,56 @@ fun PhoneNumberTextFieldWithMask(
 ) {
 
     val focusManager = LocalFocusManager.current
+    val countryList = listOf(R.drawable.russia, R.drawable.bel)
+    val selectedCountry = remember { mutableStateOf(countryList[0]) }
 
-    TextField(
-        value = userPhone.value,
-        onValueChange = {
-            userPhone.value = it.take(maxChar)
-            if (it.length >= maxChar) {
-                focusManager.clearFocus(force = true)
-                checkAuth.invoke()
-            }
-        },
-        placeholder = {
-            Text(text = maskText, style = BgRegularRoboto14)
-        },
-        maxLines = 1,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-        label = {
-            Text(text = stringResource(R.string.user_phone_string))
-        },
-        leadingIcon = {
-            Icon(Icons.Filled.Phone, contentDescription = "Localized description")
-        },
-        visualTransformation = maskTransformation
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
     )
+
+    {
+        CountrySelector()
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        OutlinedTextField(
+            modifier = Modifier.focusRequester(focusRequester),
+            value = userPhone.value,
+            onValueChange = {
+                userPhone.value = it.take(maxChar)
+                if (it.length >= maxChar) {
+                    focusManager.clearFocus(force = true)
+                    checkAuth.invoke()
+                }
+            },
+            leadingIcon = {
+                Icon(Icons.Filled.Phone, contentDescription = "Localized description")
+            },
+            placeholder = {
+                Text(text = maskText, style = BgRegularRoboto14)
+            },
+            singleLine = true,
+            maxLines = 1,
+            label = {
+                Text(text = stringResource(R.string.user_phone_string))
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            visualTransformation = maskTransformation
+
+        )
+
+    }
+
 }
 
 @Composable
 fun EnterSmsCodeTextField(
     authCode: MutableState<String>,
     onDone: () -> Unit
-)
-{
+) {
 
     var passwordHidden by rememberSaveable { mutableStateOf(true) }
 
@@ -178,7 +221,7 @@ fun EnterSmsCodeTextField(
             keyboardType = KeyboardType.NumberPassword
         ),
         keyboardActions = KeyboardActions(onDone = {
-           onDone.invoke()
+            onDone.invoke()
         }),
         trailingIcon = {
             IconButton(onClick = {
@@ -195,6 +238,37 @@ fun EnterSmsCodeTextField(
             }
         }
     )
+}
+
+@Composable
+fun CountrySelector() {
+    var expanded by remember { mutableStateOf(false) }
+    val countries = listOf("Россия", "Белоруссия")
+
+    Box {
+
+        Image(painter = painterResource(id = R.drawable.russia), contentDescription = "",
+            modifier = Modifier.clickable {
+                expanded = true
+            })
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = {
+                expanded = false
+            }
+        ) {
+            countries.forEach { country ->
+                DropdownMenuItem(
+                    text = { Text(country) },
+                    onClick = {
+                        // Здесь можно добавить логику выбора страны
+                        println("Выбрана страна: $country")
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
 }
 
 
