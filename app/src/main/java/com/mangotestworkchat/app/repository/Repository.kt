@@ -5,6 +5,7 @@ import com.mangotestworkchat.app.network.api.ApiResult
 import com.mangotestworkchat.app.network.models.response.CheckAuthCodeServerResponse
 import com.mangotestworkchat.app.network.models.response.CurrentUserServerResponse
 import com.mangotestworkchat.app.network.models.response.SendAuthCodeServerResponse
+import com.mangotestworkchat.app.network.models.response.UpgradeUserServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRefreshTokenServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRegisterServerResponse
 import com.mangotestworkchat.app.ui.chats.ChatItemModel
@@ -30,5 +31,6 @@ interface Repository {
     ): ApiResult<SendAuthCodeServerResponse>
 
     suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse>
+    suspend fun upgradeCurrentUser(): ApiResult<UpgradeUserServerResponse>
     fun getChatsList(): List<ChatItemModel>
 }

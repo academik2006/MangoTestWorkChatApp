@@ -1,5 +1,6 @@
 package com.mangotestworkchat.app.ui.profile
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -118,40 +119,39 @@ fun ProfileScreen(navigationState: NavigationState) {
         ProfileState.InitState -> {}
         is ProfileState.SuccessLoadProfileData -> {
             profileData.value = (state.value as ProfileState.SuccessLoadProfileData).data
+            cityState.value = profileData.value.city ?: ""
+            birthdayState.value = profileData.value.birthday ?: ""
         }
 
         ProfileState.ErrorLoadProfileData -> {
 
         }
-
     }
 
     ShowProfileData(
+        context,
+        viewModel,
         profileData,
         scrollState,
         launcher,
         keyboardController,
         focusManager,
         cityState,
-        userPhone,
-        userName,
-        birthdayState,
-        zodiacSignState
+        userPhone
     )
 }
 
 @Composable
 private fun ShowProfileData(
+    context: Context,
+    viewModel: ProfileViewModel,
     profileData: MutableState<CurrentUserProfileData>,
     scrollState: ScrollState,
     launcher: ManagedActivityResultLauncher<String, Uri?>,
     keyboardController: SoftwareKeyboardController?,
     focusManager: FocusManager,
     cityState: MutableState<String>,
-    userPhone: MutableState<String>,
-    userName: MutableState<String>,
-    birthdayState: MutableState<String>,
-    zodiacSignState: MutableState<String>
+    birthdayState: MutableState<String>
 ) {
     Column(
         modifier = Modifier
@@ -175,13 +175,13 @@ private fun ShowProfileData(
                 }
         )
 
-        ProfileItemConstTextField (
+        ProfileItemConstTextField(
             value = profileData.value.phone,
             imageVector = Icons.Filled.Phone,
             supportingText = "Номер телефона"
         )
 
-        ProfileItemConstTextField (
+        ProfileItemConstTextField(
             value = profileData.value.name,
             imageVector = Icons.Filled.Face,
             supportingText = "Имя в системе"
@@ -190,7 +190,7 @@ private fun ShowProfileData(
         ProfileItemEditableTextField(
             keyboardController,
             focusManager,
-            value = profileData.value.city ?: "",
+            value = cityState.value,
             onValueChange = {
                 cityState.value = it
             },
@@ -204,7 +204,7 @@ private fun ShowProfileData(
         ProfileItemEditableTextField(
             keyboardController,
             focusManager,
-            value = profileData.value.birthday ?: "",
+            value = birthdayState.value,
             onValueChange = {
                 birthdayState.value = it
             },
@@ -214,7 +214,7 @@ private fun ShowProfileData(
             supportingText = "Дата рождения"
         )
 
-        ProfileItemConstTextField (
+        ProfileItemConstTextField(
             value = "Водолей",
             imageVector = Icons.Filled.Info,
             supportingText = "Знак зодиака по дате рождения"
@@ -225,7 +225,7 @@ private fun ShowProfileData(
             iconId = R.drawable.save_24px
         )
         {
-
+            viewModel.upgradeUserVM(context)
         }
 
     }

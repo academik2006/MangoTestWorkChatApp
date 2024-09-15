@@ -33,9 +33,3 @@ data class ProfileData(
     val username: String,
     val vk: String
 )
-
-data class Avatars(
-    val avatar: String,
-    val bigAvatar: String,
-    val miniAvatar: String
-)

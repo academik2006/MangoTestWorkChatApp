@@ -11,9 +11,11 @@ import com.mangotestworkchat.app.network.models.request.RefreshTokenBodyDataMode
 import com.mangotestworkchat.app.network.models.request.RegisterUserBodyDataModel
 import com.mangotestworkchat.app.network.models.request.SendAuthCodeBodyDataModel
 import com.mangotestworkchat.app.network.models.request.SendCheckAuthCodeBodyDataModel
+import com.mangotestworkchat.app.network.models.request.UpgradeUserBodyDataModel
 import com.mangotestworkchat.app.network.models.response.CheckAuthCodeServerResponse
 import com.mangotestworkchat.app.network.models.response.CurrentUserServerResponse
 import com.mangotestworkchat.app.network.models.response.SendAuthCodeServerResponse
+import com.mangotestworkchat.app.network.models.response.UpgradeUserServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRefreshTokenServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRegisterServerResponse
 import com.mangotestworkchat.app.ui.chats.ChatItemModel
@@ -58,6 +60,12 @@ class RepositoryImpl @Inject constructor() : Repository {
 
     override suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse> {
         val response = api.getCurrentUser("Bearer ${userDataTokenProfile?.accessToken ?: throw Exception("No fresh token")}")
+        return apiResultHandler(response)
+    }
+
+    override suspend fun upgradeCurrentUser(): ApiResult<UpgradeUserServerResponse> {
+        val upgradeUserBodyDataModel = UpgradeUserBodyDataModel()
+        val response = api.upgradeUser(upgradeUserBodyDataModel)
         return apiResultHandler(response)
     }
 
