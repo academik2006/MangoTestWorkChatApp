@@ -23,9 +23,7 @@ interface Repository {
         code: String
     ): ApiResult<CheckAuthCodeServerResponse>
 
-    suspend fun refreshToken(
-        refreshToken: String
-    ): ApiResult<UserRefreshTokenServerResponse>
+    suspend fun refreshToken(): ApiResult<UserRefreshTokenServerResponse>
 
     suspend fun sendAuthCode(
         phoneNumber: String,

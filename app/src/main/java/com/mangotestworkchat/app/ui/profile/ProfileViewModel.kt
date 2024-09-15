@@ -31,7 +31,22 @@ class ProfileViewModel @Inject constructor(
 
                 }
                 is ApiResult.Error -> {
-                    showToastToUser(context, result.message)
+                    if (result.code == 401) {
+                         when (val resultRefreshToken = repository.refreshToken()) {
+                             is ApiResult.Success -> {
+                                 saveUserDataTokenVM(resultRefreshToken.successData.toUserDataToken())
+                                 getCurrentUserDataVM(context)
+                             }
+                             is ApiResult.Error -> {
+                                 showToastToUser(context, result.message)
+                             }
+                         }
+
+                    } else {
+                        showToastToUser(context, result.message)
+                    }
+
+
                 }
             }
         }

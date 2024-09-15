@@ -44,8 +44,8 @@ class RepositoryImpl @Inject constructor() : Repository {
         return apiResultHandler(response)
     }
 
-    override suspend fun refreshToken(refreshToken: String): ApiResult<UserRefreshTokenServerResponse> {
-        val refreshTokenBodyDataModel = RefreshTokenBodyDataModel(refreshToken = refreshToken)
+    override suspend fun refreshToken(): ApiResult<UserRefreshTokenServerResponse> {
+        val refreshTokenBodyDataModel = RefreshTokenBodyDataModel(refreshToken = userDataTokenProfile?.refreshToken ?: throw Exception("No fresh token"))
         val response = api.refreshToken(refreshTokenBodyDataModel)
         return apiResultHandler(response)
     }
@@ -68,7 +68,7 @@ class RepositoryImpl @Inject constructor() : Repository {
             } else handleApiError(response)
 
         } catch (e: Exception) {
-            ApiResult.Error(e)
+            ApiResult.Error(response.code(), e)
         }
     }
 
