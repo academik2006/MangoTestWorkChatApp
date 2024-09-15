@@ -1,6 +1,8 @@
 package com.mangotestworkchat.app.ui.authorization
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,17 +11,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -31,7 +31,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -40,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -49,15 +49,16 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mangotestworkchat.app.R
 import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.navigation.NavigationState
 import com.mangotestworkchat.app.navigation.Screen
+import com.mangotestworkchat.app.ui.theme.BgBoldRoboto20
 import com.mangotestworkchat.app.ui.theme.BgRegularRoboto14
 import com.mangotestworkchat.app.ui.theme.blue_APP
-import com.mangotestworkchat.app.utils.MaskTransformation
 
 @Composable
 fun AuthorizationScreen(navigationState: NavigationState) {
@@ -76,9 +77,14 @@ fun AuthorizationScreen(navigationState: NavigationState) {
     val isUserExist = remember {
         mutableStateOf(false)
     }
-    val currentRegion = "Russia"
-    val phoneMaskCountryData = viewModel.findMaskVM(currentRegion)
-    val maskTransformation = viewModel.getMaskTransformationVM(phoneMaskCountryData.mask)
+
+    val currentRegion = remember {
+        mutableStateOf("Russia")
+    }
+
+    val userPhoneCurrent = remember {
+        mutableStateOf("")
+    }
 
     val focusRequester = remember { FocusRequester() }
 
@@ -93,8 +99,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         }
 
         AuthorizationState.UserAbsent -> {
-            val userPhoneCurrent = "+79${userPhone.value}"
-            navigationState.navigateTo(Screen.RegistrationScreen.getRouteWithArgs(userPhoneCurrent))
+            navigationState.navigateTo(Screen.RegistrationScreen.getRouteWithArgs(userPhoneCurrent.value))
         }
 
         is AuthorizationState.AuthorizationCorrect -> {
@@ -123,20 +128,18 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         )
 
         PhoneNumberTextFieldWithMask(
-            focusRequester,
+            viewModel,
+            focusRequester = focusRequester,
             userPhone = userPhone,
-            maskTransformation = maskTransformation,
-            maskText = phoneMaskCountryData.mask,
-            maxChar = phoneMaskCountryData.maxChar
-        ) {
-            val userPhoneCurrent = "+79${userPhone.value}"
-            viewModel.sendAuthVM(context = context, userPhoneCurrent)
+            currentRegion = currentRegion
+        ) {prefix ->
+            userPhoneCurrent.value = "$prefix${userPhone.value}"
+            viewModel.sendAuthVM(context = context, userPhoneCurrent.value)
         }
 
         if (isUserExist.value) {
             EnterSmsCodeTextField(authCode) {
-                val userPhoneCurrent = "+79${userPhone.value}"
-                viewModel.checkAuthCodeVM(context, userPhoneCurrent, authCode.value)
+                viewModel.checkAuthCodeVM(context, userPhoneCurrent.value, authCode.value)
             }
         }
     }
@@ -144,17 +147,16 @@ fun AuthorizationScreen(navigationState: NavigationState) {
 
 @Composable
 fun PhoneNumberTextFieldWithMask(
+    viewModel: AuthorizationViewModel,
     focusRequester: FocusRequester,
     userPhone: MutableState<String>,
-    maskTransformation: MaskTransformation,
-    maskText: String,
-    maxChar: Int,
-    checkAuth: () -> Unit
+    currentRegion: MutableState<String>,
+    checkAuth: (prefix: String) -> Unit
 ) {
 
     val focusManager = LocalFocusManager.current
-    val countryList = listOf(R.drawable.russia, R.drawable.bel)
-    val selectedCountry = remember { mutableStateOf(countryList[0]) }
+    val phoneMaskCountryData = viewModel.findMaskVM(currentRegion.value)
+    val maskTransformation = viewModel.getMaskTransformationVM(phoneMaskCountryData.mask)
 
     Row(
         modifier = Modifier
@@ -164,7 +166,9 @@ fun PhoneNumberTextFieldWithMask(
     )
 
     {
-        CountrySelector()
+        CountrySelector{country ->
+            currentRegion.value = country
+        }
 
         Spacer(modifier = Modifier.width(10.dp))
 
@@ -172,17 +176,17 @@ fun PhoneNumberTextFieldWithMask(
             modifier = Modifier.focusRequester(focusRequester),
             value = userPhone.value,
             onValueChange = {
-                userPhone.value = it.take(maxChar)
-                if (it.length >= maxChar) {
+                userPhone.value = it.take(phoneMaskCountryData.maxChar)
+                if (it.length >= phoneMaskCountryData.maxChar) {
                     focusManager.clearFocus(force = true)
-                    checkAuth.invoke()
+                    checkAuth.invoke(phoneMaskCountryData.prefix)
                 }
             },
             leadingIcon = {
                 Icon(Icons.Filled.Phone, contentDescription = "Localized description")
             },
             placeholder = {
-                Text(text = maskText, style = BgRegularRoboto14)
+                Text(text = phoneMaskCountryData.mask, style = BgRegularRoboto14)
             },
             singleLine = true,
             maxLines = 1,
@@ -241,13 +245,15 @@ fun EnterSmsCodeTextField(
 }
 
 @Composable
-fun CountrySelector() {
+fun CountrySelector(dropMenuCountryClick: (country: String) -> Unit) {
+
     var expanded by remember { mutableStateOf(false) }
-    val countries = listOf("Россия", "Белоруссия")
+    val countries = listOf("Russia", "Belarus")
 
     Box {
 
-        Image(painter = painterResource(id = R.drawable.russia), contentDescription = "",
+        Image(
+            painter = painterResource(id = R.drawable.russia), contentDescription = "",
             modifier = Modifier.clickable {
                 expanded = true
             })
@@ -255,18 +261,40 @@ fun CountrySelector() {
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
-            }
+            },
+            modifier = Modifier.background(Color.White)
         ) {
-            countries.forEach { country ->
-                DropdownMenuItem(
-                    text = { Text(country) },
-                    onClick = {
-                        // Здесь можно добавить логику выбора страны
-                        println("Выбрана страна: $country")
-                        expanded = false
-                    }
-                )
+
+            Column (
+                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
+            ) {
+                countries.forEach { country ->
+                    DropdownMenuItem (
+                        text = {
+                            Text  (
+                                modifier = Modifier.fillMaxWidth(),
+                                text = country,
+                                style = BgBoldRoboto20,
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        onClick = {
+                            dropMenuCountryClick.invoke(country)
+                            expanded = false
+                        },
+                        modifier = Modifier
+                            .background(color = Color.White)
+                            .border(
+                                width = 1.dp,
+                                color = Color.Black,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+
+                    )
+                }
             }
+
+
         }
     }
 }

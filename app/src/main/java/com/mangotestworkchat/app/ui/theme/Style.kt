@@ -43,6 +43,12 @@ val BgBoldRoboto16 = TextStyle(
     fontSize = 16.sp
 )
 
+val BgBoldRoboto20 = TextStyle(
+    color = bg_main,
+    fontFamily = FontFamily(Font(R.font.roboto_bold)),
+    fontSize = 20.sp
+)
+
 val BgRegularRoboto12 = TextStyle(
     color = bg_main,
     fontFamily = FontFamily(Font(R.font.roboto_regular)),

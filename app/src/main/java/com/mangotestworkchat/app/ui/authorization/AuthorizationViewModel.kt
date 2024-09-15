@@ -21,8 +21,8 @@ class AuthorizationViewModel @Inject constructor(
 
     private fun createCountryMaskDataListVM(): List<PhoneMaskCountryData> {
         return listOf(
-            PhoneMaskCountryData(country = "Russia", mask = "+7 (9##) ###-##-##", maxChar = 9),
-            PhoneMaskCountryData(country = "Belarus", mask = "+375 (###) ###-##-##", maxChar = 10)
+            PhoneMaskCountryData(country = "Russia", mask = "+7 (9##) ###-##-##", maxChar = 9, prefix = "+79"),
+            PhoneMaskCountryData(country = "Belarus", mask = "+375 (###) ###-##-##", maxChar = 10, prefix = "+375")
         )
     }
 
