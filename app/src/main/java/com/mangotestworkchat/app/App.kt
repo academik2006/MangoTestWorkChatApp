@@ -18,6 +18,5 @@ class App : Application() {
 
 @Composable
 fun getApplicationComponent () : ApplicationComponent {
-    Log.d(APP_LOG, "getApplicationComponent: создан компонент")
     return (LocalContext.current.applicationContext as App).component
 }

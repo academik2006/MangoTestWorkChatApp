@@ -19,17 +19,22 @@ import com.mangotestworkchat.app.network.models.response.UpgradeUserServerRespon
 import com.mangotestworkchat.app.network.models.response.UserRefreshTokenServerResponse
 import com.mangotestworkchat.app.network.models.response.UserRegisterServerResponse
 import com.mangotestworkchat.app.ui.chats.ChatItemModel
+import com.mangotestworkchat.app.utils.SharedPref
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import retrofit2.Response
 import javax.inject.Inject
 
 @ApplicationScope
 class RepositoryImpl @Inject constructor() : Repository {
 
+
     private var userDataTokenProfile: UserDataToken? = null
     private val api = Network().getApiServer()
     override fun saveUserDataToken(userDataToken: UserDataToken) {
         userDataTokenProfile = userDataToken
     }
+
     override suspend fun registerNewUser(
         name: String,
         phone: String,
@@ -40,14 +45,19 @@ class RepositoryImpl @Inject constructor() : Repository {
         return apiResultHandler(response)
     }
 
-    override suspend fun checkAuthCode(phone: String, code: String): ApiResult<CheckAuthCodeServerResponse> {
+    override suspend fun checkAuthCode(
+        phone: String,
+        code: String
+    ): ApiResult<CheckAuthCodeServerResponse> {
         val sendCheckAuthCodeBodyDataModel = SendCheckAuthCodeBodyDataModel(phone, code)
         val response = api.checkAuthCode(sendCheckAuthCodeBodyDataModel)
         return apiResultHandler(response)
     }
 
     override suspend fun refreshToken(): ApiResult<UserRefreshTokenServerResponse> {
-        val refreshTokenBodyDataModel = RefreshTokenBodyDataModel(refreshToken = userDataTokenProfile?.refreshToken ?: throw Exception("No fresh token"))
+        val refreshTokenBodyDataModel = RefreshTokenBodyDataModel(
+            refreshToken = userDataTokenProfile?.refreshToken ?: throw Exception("No fresh token")
+        )
         val response = api.refreshToken(refreshTokenBodyDataModel)
         return apiResultHandler(response)
     }
@@ -59,13 +69,18 @@ class RepositoryImpl @Inject constructor() : Repository {
     }
 
     override suspend fun getCurrentUser(): ApiResult<CurrentUserServerResponse> {
-        val response = api.getCurrentUser("Bearer ${userDataTokenProfile?.accessToken ?: throw Exception("No fresh token")}")
+        val response =
+            api.getCurrentUser("Bearer ${userDataTokenProfile?.accessToken ?: throw Exception("No fresh token")}")
         return apiResultHandler(response)
     }
 
-    override suspend fun upgradeCurrentUser(): ApiResult<UpgradeUserServerResponse> {
-        val upgradeUserBodyDataModel = UpgradeUserBodyDataModel()
-        val response = api.upgradeUser(upgradeUserBodyDataModel)
+    override suspend fun upgradeCurrentUser(upgradeUserBodyDataModel: UpgradeUserBodyDataModel)
+            : ApiResult<UpgradeUserServerResponse> {
+
+        val response = api.upgradeUser(
+            accessToken = "Bearer ${userDataTokenProfile?.accessToken ?: throw Exception("No fresh token")}",
+            upgradeUserBodyDataModel = upgradeUserBodyDataModel
+        )
         return apiResultHandler(response)
     }
 
@@ -82,8 +97,14 @@ class RepositoryImpl @Inject constructor() : Repository {
 
     override fun getChatsList(): List<ChatItemModel> {
         return listOf(
-            ChatItemModel(0,icon = R.drawable.mashrooms, "Грибы", "Выезжаем в 5.00 утра", "4:49"),
-            ChatItemModel(1, icon = R.drawable.sport, "Спорт", "Сегодня тренируемся в 21.00 утра", "10.25")
+            ChatItemModel(0, icon = R.drawable.mashrooms, "Грибы", "Выезжаем в 5.00 утра", "4:49"),
+            ChatItemModel(
+                1,
+                icon = R.drawable.sport,
+                "Спорт",
+                "Сегодня тренируемся в 21.00 утра",
+                "10.25"
+            )
         )
     }
 

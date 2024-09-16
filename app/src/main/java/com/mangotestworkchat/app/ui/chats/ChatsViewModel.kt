@@ -5,15 +5,18 @@ import com.mangotestworkchat.app.ViewModelBase
 import com.mangotestworkchat.app.repository.Repository
 import com.mangotestworkchat.app.ui.authorization.AuthorizationState
 import com.mangotestworkchat.app.ui.profile.ProfileState
+import com.mangotestworkchat.app.utils.SharedPref
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChatsViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
+    sharedPref: SharedPref
 ) : ViewModelBase(
-    repository
+    repository,
+    sharedPref
 ) {
     val state = MutableStateFlow<ChatsState>(ChatsState.InitState)
     fun getChatsList() {

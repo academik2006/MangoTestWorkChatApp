@@ -11,6 +11,7 @@ data class CurrentUserServerResponse(
             avatar = profileData.avatar,
             phone = profileData.phone,
             name = profileData.name,
+            userName = profileData.username,
             city = profileData.city,
             birthday = profileData.birthday
         )

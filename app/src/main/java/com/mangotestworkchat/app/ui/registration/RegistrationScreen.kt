@@ -64,7 +64,7 @@ fun RegistrationScreen(navigationState: NavigationState, phone: String) {
     when (state.value) {
         RegistrationState.InitState -> {}
         is RegistrationState.SuccessRegisterNewUser -> {
-            viewModel.saveUserDataTokenVM((state.value as RegistrationState.SuccessRegisterNewUser).data.toUserDataToken())
+            viewModel.saveUserDataTokenVM(context, (state.value as RegistrationState.SuccessRegisterNewUser).data.toUserDataToken())
             navigationState.navigateTo(Screen.ChatsScreen.route)
         }
         is RegistrationState.ErrorRegisterNewUser -> viewModel.showToastToUser(

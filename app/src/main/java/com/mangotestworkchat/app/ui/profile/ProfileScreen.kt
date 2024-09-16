@@ -1,6 +1,5 @@
 package com.mangotestworkchat.app.ui.profile
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -53,6 +52,7 @@ import com.mangotestworkchat.app.navigation.NavigationState
 import java.io.ByteArrayOutputStream
 import com.mangotestworkchat.app.R
 import com.mangotestworkchat.app.customView.ButtonWithIcon
+import com.mangotestworkchat.app.network.models.request.Avatar
 import com.mangotestworkchat.app.ui.theme.BlackRegularRoboto12
 
 @Composable
@@ -68,6 +68,7 @@ fun ProfileScreen(navigationState: NavigationState) {
 
     val cityState = remember { mutableStateOf("") }
     val userPhone = remember { mutableStateOf("") }
+    val name = remember { mutableStateOf("") }
     val userName = remember { mutableStateOf("") }
     val birthdayState = remember { mutableStateOf("") }
     val zodiacSignState = remember { mutableStateOf("") }
@@ -118,6 +119,8 @@ fun ProfileScreen(navigationState: NavigationState) {
     when (state.value) {
         ProfileState.InitState -> {}
         is ProfileState.SuccessLoadProfileData -> {
+            name.value = profileData.value.name
+            userName.value = profileData.value.userName
             profileData.value = (state.value as ProfileState.SuccessLoadProfileData).data
             cityState.value = profileData.value.city ?: ""
             birthdayState.value = profileData.value.birthday ?: ""
@@ -129,29 +132,41 @@ fun ProfileScreen(navigationState: NavigationState) {
     }
 
     ShowProfileData(
-        context,
-        viewModel,
-        profileData,
-        scrollState,
-        launcher,
-        keyboardController,
-        focusManager,
-        cityState,
-        userPhone
+        profileData = profileData,
+        scrollState = scrollState,
+        launcher = launcher,
+        keyboardController = keyboardController,
+        focusManager = focusManager,
+        cityState = cityState,
+        birthdayState = userPhone,
+        upgradeUserButtonClick = {
+            viewModel.upgradeUserVM(
+                context = context,
+                name = name.value,
+                userName = userName.value,
+                birthday = birthdayState.value,
+                city = cityState.value,
+                vk = "",
+                instagram = "",
+                status = "",
+                avatar = Avatar(
+                    "",""
+                )
+            )
+        }
     )
 }
 
 @Composable
 private fun ShowProfileData(
-    context: Context,
-    viewModel: ProfileViewModel,
     profileData: MutableState<CurrentUserProfileData>,
     scrollState: ScrollState,
     launcher: ManagedActivityResultLauncher<String, Uri?>,
     keyboardController: SoftwareKeyboardController?,
     focusManager: FocusManager,
     cityState: MutableState<String>,
-    birthdayState: MutableState<String>
+    birthdayState: MutableState<String>,
+    upgradeUserButtonClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -182,7 +197,7 @@ private fun ShowProfileData(
         )
 
         ProfileItemConstTextField(
-            value = profileData.value.name,
+            value = profileData.value.userName,
             imageVector = Icons.Filled.Face,
             supportingText = "Имя в системе"
         )
@@ -225,7 +240,7 @@ private fun ShowProfileData(
             iconId = R.drawable.save_24px
         )
         {
-            viewModel.upgradeUserVM(context)
+            upgradeUserButtonClick.invoke()
         }
 
     }
@@ -282,7 +297,6 @@ fun ProfileItemEditableTextField(
         maxLines = 1,
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(onGo = {
-            Log.d(APP_LOG, "ProfileItemTextField: сработало нажатие на клаву")
             keyboardController?.hide()
             focusManager.clearFocus()
         }),

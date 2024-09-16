@@ -38,6 +38,7 @@ interface ApiService {
 
     @POST("api/v1/users/me/")
     suspend fun upgradeUser(
+        @Header("Authorization") accessToken: String,
         @Body upgradeUserBodyDataModel: UpgradeUserBodyDataModel)
             : Response<UpgradeUserServerResponse>
 

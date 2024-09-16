@@ -8,14 +8,16 @@ import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.ViewModelBase
 import com.mangotestworkchat.app.repository.Repository
 import com.mangotestworkchat.app.utils.MaskTransformation
+import com.mangotestworkchat.app.utils.SharedPref
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AuthorizationViewModel @Inject constructor(
-    private val repository: Repository
-) : ViewModelBase(repository) {
+    private val repository: Repository,
+    sharedPref: SharedPref
+) : ViewModelBase(repository, sharedPref) {
 
     val state = MutableStateFlow<AuthorizationState>(AuthorizationState.InitState)
 

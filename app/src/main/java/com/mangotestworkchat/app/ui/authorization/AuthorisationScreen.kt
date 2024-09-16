@@ -1,5 +1,6 @@
 package com.mangotestworkchat.app.ui.authorization
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mangotestworkchat.app.APP_LOG
 import com.mangotestworkchat.app.R
 import com.mangotestworkchat.app.getApplicationComponent
 import com.mangotestworkchat.app.navigation.NavigationState
@@ -93,7 +95,12 @@ fun AuthorizationScreen(navigationState: NavigationState) {
     }
 
     when (state.value) {
-        AuthorizationState.InitState -> {}
+        AuthorizationState.InitState -> {
+            //реализовать коректную авторизацию по токену из памяти я не успел
+            // не работал с библиотекой jwt. Хранить его без шифрования плохая практика :(
+            val token = viewModel.getSaveTokenVM(context)
+            Log.d(APP_LOG, "AuthorizationScreen: в памяти лежит токен доступа $token")
+        }
         AuthorizationState.UserExists -> {
             isUserExist.value = true
         }
@@ -103,7 +110,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         }
 
         is AuthorizationState.AuthorizationCorrect -> {
-            viewModel.saveUserDataTokenVM((state.value as AuthorizationState.AuthorizationCorrect).data.toUserDataToken())
+            viewModel.saveUserDataTokenVM(context, (state.value as AuthorizationState.AuthorizationCorrect).data.toUserDataToken())
             navigationState.navigateTo(Screen.ChatsScreen.route)
         }
     }
@@ -293,8 +300,6 @@ fun CountrySelector(dropMenuCountryClick: (country: String) -> Unit) {
                     )
                 }
             }
-
-
         }
     }
 }
