@@ -42,6 +42,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -101,6 +102,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
             val token = viewModel.getSaveTokenVM(context)
             Log.d(APP_LOG, "AuthorizationScreen: в памяти лежит токен доступа $token")
         }
+
         AuthorizationState.UserExists -> {
             isUserExist.value = true
         }
@@ -110,7 +112,10 @@ fun AuthorizationScreen(navigationState: NavigationState) {
         }
 
         is AuthorizationState.AuthorizationCorrect -> {
-            viewModel.saveUserDataTokenVM(context, (state.value as AuthorizationState.AuthorizationCorrect).data.toUserDataToken())
+            viewModel.saveUserDataTokenVM(
+                context,
+                (state.value as AuthorizationState.AuthorizationCorrect).data.toUserDataToken()
+            )
             navigationState.navigateTo(Screen.ChatsScreen.route)
         }
     }
@@ -139,7 +144,7 @@ fun AuthorizationScreen(navigationState: NavigationState) {
             focusRequester = focusRequester,
             userPhone = userPhone,
             currentRegion = currentRegion
-        ) {prefix ->
+        ) { prefix ->
             userPhoneCurrent.value = "$prefix${userPhone.value}"
             viewModel.sendAuthVM(context = context, userPhoneCurrent.value)
         }
@@ -173,7 +178,7 @@ fun PhoneNumberTextFieldWithMask(
     )
 
     {
-        CountrySelector{country ->
+        CountrySelector(phoneMaskCountryData) { country ->
             currentRegion.value = country
         }
 
@@ -252,56 +257,61 @@ fun EnterSmsCodeTextField(
 }
 
 @Composable
-fun CountrySelector(dropMenuCountryClick: (country: String) -> Unit) {
+fun CountrySelector(
+    phoneMaskCountryData: PhoneMaskCountryData,
+    dropMenuCountryClick: (country: String) -> Unit
+) {
 
     var expanded by remember { mutableStateOf(false) }
     val countries = listOf("Russia", "Belarus")
 
-    Box {
-
-        Image(
-            painter = painterResource(id = R.drawable.russia), contentDescription = "",
-            modifier = Modifier.clickable {
+    Image(
+        painter = painterResource(id = phoneMaskCountryData.icon), contentDescription = "",
+        modifier = Modifier
+            .size(80.dp, 40.dp)
+            .clickable {
                 expanded = true
-            })
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            },
-            modifier = Modifier.background(Color.White)
+            }
+
+    )
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = {
+            expanded = false
+        },
+        modifier = Modifier.background(Color.White)
+    ) {
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
         ) {
+            countries.forEach { country ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = country,
+                            style = BgBoldRoboto20,
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                    onClick = {
+                        dropMenuCountryClick.invoke(country)
+                        expanded = false
+                    },
+                    modifier = Modifier
+                        .background(color = Color.White)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Black,
+                            shape = RoundedCornerShape(16.dp)
+                        )
 
-            Column (
-                verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically)
-            ) {
-                countries.forEach { country ->
-                    DropdownMenuItem (
-                        text = {
-                            Text  (
-                                modifier = Modifier.fillMaxWidth(),
-                                text = country,
-                                style = BgBoldRoboto20,
-                                textAlign = TextAlign.Center
-                            )
-                        },
-                        onClick = {
-                            dropMenuCountryClick.invoke(country)
-                            expanded = false
-                        },
-                        modifier = Modifier
-                            .background(color = Color.White)
-                            .border(
-                                width = 1.dp,
-                                color = Color.Black,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-
-                    )
-                }
+                )
             }
         }
     }
+
 }
 
 

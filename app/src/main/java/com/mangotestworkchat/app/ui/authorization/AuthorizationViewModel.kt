@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.mangotestworkchat.app.network.api.ApiResult
 import com.mangotestworkchat.app.APP_LOG
+import com.mangotestworkchat.app.R
 import com.mangotestworkchat.app.ViewModelBase
 import com.mangotestworkchat.app.repository.Repository
 import com.mangotestworkchat.app.utils.MaskTransformation
@@ -23,8 +24,8 @@ class AuthorizationViewModel @Inject constructor(
 
     private fun createCountryMaskDataListVM(): List<PhoneMaskCountryData> {
         return listOf(
-            PhoneMaskCountryData(country = "Russia", mask = "+7 (9##) ###-##-##", maxChar = 9, prefix = "+79"),
-            PhoneMaskCountryData(country = "Belarus", mask = "+375 (###) ###-##-##", maxChar = 10, prefix = "+375")
+            PhoneMaskCountryData(country = "Russia", icon = R.drawable.russia120_80, mask = "+7 (9##) ###-##-##", maxChar = 9, prefix = "+79"),
+            PhoneMaskCountryData(country = "Belarus", icon = R.drawable.bel_120_80, mask = "+375 (###) ###-##-##", maxChar = 10, prefix = "+375")
         )
     }
 
